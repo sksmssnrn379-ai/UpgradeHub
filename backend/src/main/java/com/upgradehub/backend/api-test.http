@@ -1,0 +1,8 @@
+### 일반 사용자 로그인
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "email": "user2@test.com",
+  "password": "실제_비밀번호"
+}

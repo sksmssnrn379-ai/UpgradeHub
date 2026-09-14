@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class OrderItemResponse {
 
-    private Long orderItemId;
+    private Long productId;
     private Long productId;
     private String productName;
     private String brand;

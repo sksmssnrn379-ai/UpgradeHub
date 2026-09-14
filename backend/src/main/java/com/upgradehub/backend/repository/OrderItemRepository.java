@@ -18,7 +18,7 @@ public interface OrderItemRepository
     );
 
     Optional<OrderItem> findByIdAndOrderUserEmail(
-            Long orderItemId,
+            Long productId,
             String email
     );
 }

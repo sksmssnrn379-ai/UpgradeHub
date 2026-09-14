@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class PurchasedPartResponse {
 
     private Long orderId;
-    private Long orderItemId;
+    private Long productId;
     private Long productId;
     private String productName;
     private String brand;

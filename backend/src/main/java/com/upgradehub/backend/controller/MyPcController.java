@@ -7,6 +7,9 @@ import com.upgradehub.backend.service.MyPcService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.security.Principal;
 import java.util.List;
@@ -77,15 +80,14 @@ public class MyPcController {
      * 구매한 부품을 MY PC에 장착
      */
     @PutMapping("/parts")
-    public MyPc installPurchasedPart(
-            @Valid @RequestBody MyPcPartRequest request,
-            Principal principal
-    ) {
-        String email = principal.getName();
-
-        return myPcService.installPurchasedPart(
-                email,
-                request
-        );
-    }
+public MyPc installPurchasedPart(
+        Authentication authentication,
+        @Valid @RequestBody
+        MyPcPartRequest request
+) {
+    return myPcService.installPurchasedPart(
+            authentication.getName(),
+            request
+    );
+}
 }

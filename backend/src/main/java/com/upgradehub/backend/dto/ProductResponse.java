@@ -3,8 +3,11 @@ package com.upgradehub.backend.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import java.time.LocalDate;
-@Getter
+import lombok.Builder;
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ProductResponse {
 
     private Long id;

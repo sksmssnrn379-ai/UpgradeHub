@@ -215,7 +215,10 @@ public class SecurityConfig {
                 new CorsConfiguration();
 
         configuration.setAllowedOrigins(
-                List.of("http://localhost:5173")
+        List.of(
+                "http://localhost:5173",
+                "https://main.xxxxxxxxx.amplifyapp.com"
+        )
         );
 
         configuration.setAllowedMethods(
@@ -223,6 +226,7 @@ public class SecurityConfig {
                         "GET",
                         "POST",
                         "PUT",
+                        "PATCH",
                         "DELETE",
                         "OPTIONS"
                 )
@@ -230,8 +234,7 @@ public class SecurityConfig {
 
         configuration.setAllowedHeaders(
                 List.of(
-                        "Authorization",
-                        "Content-Type"
+                        "*"
                 )
         );
 

@@ -153,9 +153,7 @@ public class ProductService {
                 .price(product.getPrice())
                 .stock(product.getStock())
                 .category(product.getCategory())
-                .performanceScore(
-                        product.getPerformanceScore()
-                )
+                
                 .benchmarkScore(
                         product.getBenchmarkScore()
                 )

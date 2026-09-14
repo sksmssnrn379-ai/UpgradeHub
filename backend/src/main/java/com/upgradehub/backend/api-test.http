@@ -1,8 +1,19 @@
-### 일반 사용자 로그인
-POST http://localhost:8080/auth/login
+@baseUrl = https://emptyplace.duckdns.org
+@adminToken = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuZXd1c2VyQHRlc3QuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzg5MzczNjg2LCJleHAiOjE3ODkzNzcyODZ9.WPpmiFZvx-Zvswb7ujI17AZm6ylV75c9qVJuuamiLf8
+
+
+PUT {{baseUrl}}/products/1
+Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
-  "email": "user2@test.com",
-  "password": "실제_비밀번호"
+  "name": "GeForce RTX 3060",
+  "brand": "NVIDIA",
+  "price": 399000,
+  "stock": 10,
+  "category": "GPU",
+  "benchmarkScore": 55.0,
+  "benchmarkType": "GPU_RELATIVE_PERFORMANCE",
+  "benchmarkSource": "수동 입력 벤치마크 자료",
+  "benchmarkUpdatedAt": "2026-09-14"
 }

@@ -15,6 +15,11 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import ComparePage from "./pages/ComparePage.jsx";
 import AdvisorPage from "./pages/AdvisorPage.jsx";
 import PurchasedPartsPage from "./pages/PurchasedPartsPage.jsx";
+
+import CheckoutPage from "./pages/CheckoutPage.jsx";
+import PaymentSuccessPage from "./pages/PaymentSuccessPage.jsx";
+import PaymentFailPage from "./pages/PaymentFailPage.jsx";
+
 function App() {
   return (
     <Routes>
@@ -107,7 +112,42 @@ function App() {
           </ProtectedRoute>
         }
       />
-    </Routes>
+      <Route
+        path="/checkout"
+        element={
+          <ProtectedRoute>
+            <CheckoutPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/payment/success"
+        element={
+          <ProtectedRoute>
+            <PaymentSuccessPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/payment/fail"
+        element={<PaymentFailPage />}
+      />
+
+      
+  <Route
+    path="*"
+    element={
+      <Navigate to="/home" />
+    }
+  />
+
+  <Route
+    path="/checkout"
+    element={<CheckoutPage />}
+  />
+</Routes>
     
   );
 }

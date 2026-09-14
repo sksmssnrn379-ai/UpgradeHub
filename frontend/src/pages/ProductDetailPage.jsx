@@ -10,6 +10,10 @@ import {
   Plus,
   ShoppingCart,
   Zap,
+  BarChart3,
+  CalendarDays,
+  Database,
+  Info
 } from "lucide-react";
 
 import {
@@ -64,10 +68,10 @@ function ProductDetailPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  
+
   const { id } = useParams();
   const productsReturnPath =
-  location.state?.from || "/products";
+    location.state?.from || "/products";
 
   const [product, setProduct] =
     useState(null);
@@ -119,8 +123,8 @@ function ProductDetailPage() {
           const specResponse =
             await api.get(
               "/products/" +
-                id +
-                "/spec"
+              id +
+              "/spec"
             );
 
           if (active) {
@@ -160,7 +164,10 @@ function ProductDetailPage() {
   function handleLogout() {
     localStorage.removeItem("token");
     setIsLoggedIn(false);
-    navigate("/home");
+
+    navigate("/home", {
+      replace: true,
+    });
   }
 
   function decreaseQuantity() {
@@ -291,32 +298,32 @@ function ProductDetailPage() {
   }
 
   function moveToComparison() {
-  const comparisonPath =
-    "/compare/" + product.id;
+    const comparisonPath =
+      "/compare/" + product.id;
 
-  const token =
-    localStorage.getItem("token");
+    const token =
+      localStorage.getItem("token");
 
-  if (!token) {
-    navigate("/login", {
+    if (!token) {
+      navigate("/login", {
+        state: {
+          from: comparisonPath,
+        },
+      });
+
+      return;
+    }
+
+    navigate(comparisonPath, {
       state: {
-        from: comparisonPath,
+        product: product,
+        backTo:
+          "/products/" + product.id,
+        productsReturnPath:
+          productsReturnPath,
       },
     });
-
-    return;
   }
-
-  navigate(comparisonPath, {
-    state: {
-      product: product,
-      backTo:
-        "/products/" + product.id,
-      productsReturnPath:
-        productsReturnPath,
-    },
-  });
-}
 
 
   function formatPrice(price) {
@@ -341,15 +348,62 @@ function ProductDetailPage() {
 
     return String(value) + (suffix || "");
   }
+  function getBenchmarkTypeLabel(
+    benchmarkType
+  ) {
+    const labels = {
+      CPU_MULTI_CORE: "CPU 멀티코어",
+      CPU_SINGLE_CORE: "CPU 싱글코어",
+      CPU_MARK: "CPU 종합 성능",
+      GPU_RELATIVE_PERFORMANCE:
+        "GPU 상대 성능",
+      GPU_GAMING_1440P:
+        "1440p 게이밍 성능",
+      GPU_GAMING_4K:
+        "4K 게이밍 성능",
+    };
+
+    return (
+      labels[benchmarkType] ||
+      benchmarkType ||
+      "정보 없음"
+    );
+  }
 
   const PRODUCT_ICONS = {
-  CPU: Cpu,
-  GPU: Monitor,
-  RAM: MemoryStick,
-  SSD: HardDrive,
-  MOTHERBOARD: CircuitBoard,
-  POWER: Zap,
-};
+    CPU: Cpu,
+    GPU: Monitor,
+    RAM: MemoryStick,
+    SSD: HardDrive,
+    MOTHERBOARD: CircuitBoard,
+    POWER: Zap,
+  };
+
+  function formatBenchmarkDate(date) {
+    if (!date) {
+      return "정보 없음";
+    }
+
+    const matchedDate = String(date).match(
+      /^(\d{4})-(\d{2})-(\d{2})$/
+    );
+
+    if (!matchedDate) {
+      return String(date);
+    }
+
+    const [, year, month, day] =
+      matchedDate;
+
+    return (
+      Number(year) +
+      "년 " +
+      Number(month) +
+      "월 " +
+      Number(day) +
+      "일"
+    );
+  }
 
   if (loading) {
     return (
@@ -394,10 +448,30 @@ function ProductDetailPage() {
 
   const totalPrice =
     Number(product.price) * quantity;
+  const hasPerformanceScore =
+    product.performanceScore !== null &&
+    product.performanceScore !== undefined;
+
+  const normalizedPerformanceScore =
+    hasPerformanceScore
+      ? Math.min(
+        100,
+        Math.max(
+          0,
+          Number(
+            product.performanceScore
+          )
+        )
+      )
+      : 0;
+
+  const hasBenchmarkInformation =
+    product.benchmarkScore !== null &&
+    product.benchmarkScore !== undefined;
 
   const ProductIcon =
-  PRODUCT_ICONS[product.category] ||
-  CircuitBoard;
+    PRODUCT_ICONS[product.category] ||
+    CircuitBoard;
 
   const registeredSpecs =
     specDefinitions.filter(
@@ -549,9 +623,7 @@ function ProductDetailPage() {
                   </p>
 
                   <p className="mt-2 text-lg font-black text-cyan-400">
-                    {formatPrice(
-                      product.price
-                    )}
+                    {formatPrice(product.price)}
                   </p>
                 </div>
 
@@ -573,17 +645,157 @@ function ProductDetailPage() {
                 </div>
 
                 <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-                  <p className="text-sm text-slate-500">
-                    성능 점수
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <BarChart3
+                      size={16}
+                      className="text-violet-400"
+                    />
+
+                    <p className="text-sm text-slate-500">
+                      성능 점수
+                    </p>
+                  </div>
 
                   <p className="mt-2 text-lg font-black text-violet-400">
-                    {product.performanceScore !== null &&
-                    product.performanceScore !== undefined
-                      ? product.performanceScore + " / 100"
+                    {hasPerformanceScore
+                      ? normalizedPerformanceScore + " / 100"
                       : "정보 없음"}
                   </p>
+
+                  {hasPerformanceScore && (
+                    <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-slate-800">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-violet-500 to-cyan-400 transition-all duration-500"
+                        style={{
+                          width:
+                            normalizedPerformanceScore + "%",
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
+              </div>
+
+              <div className="mt-5 overflow-hidden rounded-xl border border-slate-800 bg-slate-950">
+                <div className="flex flex-col justify-between gap-4 border-b border-slate-800 px-5 py-4 sm:flex-row sm:items-center">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-violet-500/10">
+                      <BarChart3
+                        size={21}
+                        className="text-violet-400"
+                      />
+                    </div>
+
+                    <div>
+                      <h3 className="font-bold">
+                        성능 점수 기준
+                      </h3>
+
+                      <p className="mt-0.5 text-xs text-slate-500">
+                        동일 카테고리 내 상대 성능 지표
+                      </p>
+                    </div>
+                  </div>
+
+                  {hasPerformanceScore && (
+                    <span className="w-fit rounded-full border border-violet-500/30 bg-violet-500/10 px-3 py-1 text-sm font-black text-violet-300">
+                      {normalizedPerformanceScore}점
+                    </span>
+                  )}
+                </div>
+
+                {hasBenchmarkInformation ? (
+                  <div className="p-5">
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+                        <div className="flex items-center gap-2 text-sm text-slate-500">
+                          <Database size={16} />
+                          원본 벤치마크
+                        </div>
+
+                        <p className="mt-2 text-xl font-black text-cyan-400">
+                          {Number(
+                            product.benchmarkScore
+                          ).toLocaleString("ko-KR")}
+                        </p>
+                      </div>
+
+                      <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+                        <div className="flex items-center gap-2 text-sm text-slate-500">
+                          <BarChart3 size={16} />
+                          벤치마크 유형
+                        </div>
+
+                        <p className="mt-2 font-bold text-slate-200">
+                          {getBenchmarkTypeLabel(
+                            product.benchmarkType
+                          )}
+                        </p>
+                      </div>
+
+                      <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+                        <div className="flex items-center gap-2 text-sm text-slate-500">
+                          <Info size={16} />
+                          데이터 출처
+                        </div>
+
+                        <p className="mt-2 break-words font-bold text-slate-200">
+                          {product.benchmarkSource ||
+                            "정보 없음"}
+                        </p>
+                      </div>
+
+                      <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+                        <div className="flex items-center gap-2 text-sm text-slate-500">
+                          <CalendarDays size={16} />
+                          기준 날짜
+                        </div>
+
+                        <p className="mt-2 font-bold text-slate-200">
+                          {formatBenchmarkDate(
+                            product.benchmarkUpdatedAt
+                          )}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 flex items-start gap-3 rounded-xl border border-cyan-500/20 bg-cyan-500/5 px-4 py-3">
+                      <Info
+                        size={18}
+                        className="mt-0.5 shrink-0 text-cyan-400"
+                      />
+
+                      <p className="text-xs leading-6 text-slate-400">
+                        성능 점수는 동일한 카테고리의
+                        상품을 비교하기 위한 상대
+                        지표입니다. 실제 성능은 시스템
+                        구성, 소프트웨어, 드라이버 및
+                        사용 환경에 따라 달라질 수
+                        있습니다.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-5">
+                    <div className="flex items-start gap-3 rounded-xl border border-dashed border-slate-700 bg-slate-900 p-5">
+                      <Info
+                        size={20}
+                        className="mt-0.5 shrink-0 text-slate-500"
+                      />
+
+                      <div>
+                        <p className="font-bold text-slate-300">
+                          등록된 벤치마크가 없습니다.
+                        </p>
+
+                        <p className="mt-2 text-sm leading-6 text-slate-500">
+                          이 상품은 아직 벤치마크 원본
+                          점수와 출처가 등록되지 않았습니다.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="mt-7 rounded-xl border border-slate-800 bg-slate-950 p-5">
@@ -603,7 +815,10 @@ function ProductDetailPage() {
                     <button
                       type="button"
                       onClick={decreaseQuantity}
-                      disabled={quantity <= 1}
+                      disabled={
+                        product.stock === 0 ||
+                        quantity <= 1
+                      }
                       className="p-3 text-slate-300 transition hover:bg-slate-800 hover:text-cyan-400 disabled:cursor-not-allowed disabled:opacity-30"
                     >
                       <Minus size={19} />
@@ -614,16 +829,16 @@ function ProductDetailPage() {
                       min="1"
                       max={product.stock}
                       value={quantity}
-                      onChange={
-                        handleQuantityChange
-                      }
-                      className="w-16 border-x border-slate-700 bg-slate-950 py-3 text-center font-black text-white outline-none"
+                      disabled={product.stock === 0}
+                      onChange={handleQuantityChange}
+                      className="w-16 border-x border-slate-700 bg-slate-950 py-3 text-center font-black text-white outline-none disabled:cursor-not-allowed disabled:text-slate-600"
                     />
 
                     <button
                       type="button"
                       onClick={increaseQuantity}
                       disabled={
+                        product.stock === 0 ||
                         quantity >= product.stock
                       }
                       className="p-3 text-slate-300 transition hover:bg-slate-800 hover:text-cyan-400 disabled:cursor-not-allowed disabled:opacity-30"
@@ -690,10 +905,10 @@ function ProductDetailPage() {
                 >
                   {messageType ===
                     "success" && (
-                    <CheckCircle2
-                      size={18}
-                    />
-                  )}
+                      <CheckCircle2
+                        size={18}
+                      />
+                    )}
 
                   {message}
                 </div>
@@ -718,7 +933,7 @@ function ProductDetailPage() {
             </div>
 
             {!spec ||
-            registeredSpecs.length === 0 ? (
+              registeredSpecs.length === 0 ? (
               <div className="rounded-xl border border-dashed border-slate-700 bg-slate-950 p-10 text-center">
                 <CircuitBoard
                   size={48}
@@ -749,7 +964,7 @@ function ProductDetailPage() {
                       <strong className="text-right text-slate-200">
                         {renderSpecValue(
                           spec[
-                            definition.key
+                          definition.key
                           ],
                           definition.suffix
                         )}
@@ -780,12 +995,15 @@ function ProductDetailPage() {
               </button>
             </div>
 
-            <Link
-              to="/products"
-              className="mt-4 block rounded-xl border border-slate-700 py-3 text-center font-bold text-slate-300 transition hover:border-cyan-500 hover:text-cyan-400"
+            <button
+              type="button"
+              onClick={() => {
+                navigate(productsReturnPath);
+              }}
+              className="mt-4 w-full rounded-xl border border-slate-700 py-3 text-center font-bold text-slate-300 transition hover:border-cyan-500 hover:text-cyan-400"
             >
               다른 상품 둘러보기
-            </Link>
+            </button>
           </section>
         </div>
       </main>

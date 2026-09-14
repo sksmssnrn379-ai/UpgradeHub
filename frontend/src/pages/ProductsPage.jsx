@@ -565,8 +565,10 @@ function ProductsPage() {
                             </span>
 
                             <span className="font-bold text-cyan-400">
-                              {product.performanceScore ??
-                                "정보 없음"}
+                              {product.performanceScore !== null &&
+                              product.performanceScore !== undefined
+                                ? product.performanceScore + " / 100"
+                                : "정보 없음"}
                             </span>
                           </div>
 

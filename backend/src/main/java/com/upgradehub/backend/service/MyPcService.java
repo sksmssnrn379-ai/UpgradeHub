@@ -261,7 +261,7 @@ public class MyPcService {
                                             .getPerformanceScore()
                             )
                             
-                            )
+                            
                             .build();
                 })
                 .toList();

@@ -84,31 +84,33 @@ function PurchasedPartsPage() {
     };
   }, [navigate]);
 
-  async function equipPart(productId) {
-    setEquippingId(productId);
-    setMessage("");
+  async function equipPart(orderItemId) {
+  setEquippingId(orderItemId);
+  setMessage("");
 
-    try {
-      await api.put("/mypc/parts", {
-        productId: productId,
-      });
+  try {
+    await api.put("/mypc/parts", {
+      orderItemId: orderItemId,
+    });
 
-      setMessage(
-        "선택한 부품을 MY PC에 장착했습니다."
-      );
+    setMessage(
+      "선택한 부품을 MY PC에 장착했습니다."
+    );
 
-      setMessageType("success");
-    } catch (error) {
-      setMessage(
-        error.response?.data?.message ||
-          "부품을 장착하지 못했습니다."
-      );
+    setMessageType("success");
 
-      setMessageType("error");
-    } finally {
-      setEquippingId(null);
-    }
+    navigate("/mypc");
+  } catch (error) {
+    setMessage(
+      error.response?.data?.message ||
+        "부품을 장착하지 못했습니다."
+    );
+
+    setMessageType("error");
+  } finally {
+    setEquippingId(null);
   }
+}
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
@@ -216,25 +218,21 @@ function PurchasedPartsPage() {
                 </div>
 
                 <button
-                  type="button"
-                  disabled={
-                    equippingId ===
-                    part.productId
-                  }
-                  onClick={() => {
-                    equipPart(
-                      part.productId
-                    );
-                  }}
-                  className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-500 py-3 font-black text-slate-950 disabled:opacity-50"
-                >
-                  <CheckCircle2 size={18} />
+  type="button"
+  disabled={
+    equippingId === part.orderItemId
+  }
+  onClick={() => {
+    equipPart(part.orderItemId);
+  }}
+  className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-500 py-3 font-black text-slate-950 disabled:opacity-50"
+>
+  <CheckCircle2 size={18} />
 
-                  {equippingId ===
-                  part.productId
-                    ? "장착 중..."
-                    : "MY PC에 장착"}
-                </button>
+  {equippingId === part.orderItemId
+    ? "장착 중..."
+    : "MY PC에 장착"}
+</button>
               </article>
             ))}
           </div>

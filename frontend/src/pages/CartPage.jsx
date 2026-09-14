@@ -118,7 +118,7 @@ export default function CartPage() {
   const totalCount = cart.items.reduce((total, item) => total + item.quantity, 0);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen overflow-x-hidden bg-slate-950 text-white">
       <header className="border-b border-slate-800 bg-slate-900">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <button onClick={() => navigate("/")} className="text-2xl font-bold text-cyan-400">
@@ -133,7 +133,7 @@ export default function CartPage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-10">
+      <main className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6">
         <button onClick={() => navigate("/products")} className="mb-6 flex items-center gap-2 text-sm text-slate-400 hover:text-cyan-400 transition">
           <ArrowLeft size={17} /> 쇼핑 계속하기
         </button>
@@ -166,26 +166,32 @@ export default function CartPage() {
             <button onClick={() => navigate("/products")} className="mt-7 rounded-lg bg-cyan-500 px-7 py-3 font-bold text-slate-950 hover:bg-cyan-400 transition">상품 보러 가기</button>
           </section>
         ) : (
-          <div className="grid lg:grid-cols-[1fr_360px] gap-6 items-start">
-            <section className="space-y-4">
+          <div className="grid min-w-0 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
+            <section className="min-w-0 space-y-4">
               {cart.items.map((item) => (
-                <article key={item.itemId} className="rounded-xl border border-slate-800 bg-slate-900 p-5 flex flex-col md:flex-row md:items-center gap-5 hover:border-slate-700 transition">
-                  <div className="h-28 w-full md:w-28 shrink-0 rounded-xl bg-slate-800 flex items-center justify-center">
-                    <Cpu size={48} className="text-cyan-400" />
-                  </div>
+                <article
+                  key={item.itemId}
+                  className="flex min-w-0 flex-col gap-5 rounded-xl border border-slate-800 bg-slate-900 p-5 transition hover:border-slate-700 md:grid md:grid-cols-[112px_minmax(0,1fr)] md:items-center xl:grid-cols-[112px_minmax(0,1fr)_auto]"
+                >
+                                  <div className="flex h-28 w-full shrink-0 items-center justify-center rounded-xl bg-slate-800 md:w-28">
+                  <Cpu
+                    size={48}
+                    className="text-cyan-400"
+                  />
+                </div>
                   <div className="min-w-0 flex-1">
                     <span className="text-xs font-bold uppercase tracking-wider text-green-400">{item.brand}</span>
-                    <h2 className="mt-1 text-xl font-bold truncate">{item.productName}</h2>
+                    <h2 className="mt-1 break-words text-xl font-bold">{item.productName}</h2>
                     <p className="mt-2 text-sm text-slate-400">개당 {formatPrice(item.price)}원</p>
                   </div>
-                  <div className="flex items-center justify-between md:justify-end gap-6">
+                 <div className="flex min-w-0 flex-wrap items-center justify-between gap-4 md:col-start-2 xl:col-start-auto xl:flex-nowrap xl:justify-end">
                     <div className="flex items-center rounded-lg border border-slate-700 bg-slate-950 overflow-hidden">
                       <button disabled={item.quantity <= 1} onClick={() => changeQuantity(item.itemId, item.quantity, -1)} className="p-2.5 text-slate-300 hover:bg-slate-800 hover:text-cyan-400 disabled:opacity-30"><Minus size={16} /></button>
                       <span className="w-10 text-center font-bold">{item.quantity}</span>
                       <button onClick={() => changeQuantity(item.itemId, item.quantity, 1)} className="p-2.5 text-slate-300 hover:bg-slate-800 hover:text-cyan-400"><Plus size={16} /></button>
                     </div>
-                    <div className="w-32 text-right">
-                      <strong className="text-lg text-cyan-400">{formatPrice(item.subtotal)}원</strong>
+                    <div className="min-w-28 text-right">
+                      <strong className="block break-words text-lg text-cyan-400">{formatPrice(item.subtotal)}원</strong>
                       <button onClick={() => deleteItem(item.itemId)} className="mt-2 ml-auto flex items-center gap-1 text-xs text-slate-500 hover:text-red-400 transition"><Trash2 size={14} /> 삭제</button>
                     </div>
                   </div>
@@ -193,15 +199,15 @@ export default function CartPage() {
               ))}
             </section>
 
-            <aside className="lg:sticky lg:top-6 rounded-xl border border-cyan-500/30 bg-gradient-to-b from-slate-900 to-cyan-950/40 p-6">
+            <aside className="w-full min-w-0 rounded-xl border border-cyan-500/30 bg-gradient-to-b from-slate-900 to-cyan-950/40 p-5 sm:p-6 xl:sticky xl:top-6 xl:self-start">
               <h2 className="text-2xl font-bold">ORDER SUMMARY</h2>
               <div className="mt-6 space-y-4 border-b border-slate-700 pb-6 text-sm">
                 <div className="flex justify-between text-slate-400"><span>총 상품 수</span><span className="text-white font-semibold">{totalCount}개</span></div>
                 <div className="flex justify-between text-slate-400"><span>배송비</span><span className="text-green-400 font-semibold">무료</span></div>
               </div>
-              <div className="py-6 flex items-end justify-between">
+              <div className="flex flex-wrap items-end justify-between gap-3 py-6">
                 <span className="font-semibold">총 주문 금액</span>
-                <strong className="text-2xl text-cyan-400">{formatPrice(cart.totalPrice)}원</strong>
+                <strong className="whitespace-nowrap text-2xl text-cyan-400">{formatPrice(cart.totalPrice)}원</strong>
               </div>
               <button disabled={ordering} onClick={createOrder} className="w-full rounded-lg bg-cyan-500 py-3.5 font-black text-slate-950 flex items-center justify-center gap-2 hover:bg-cyan-400 disabled:opacity-50 transition">
                 <CreditCard size={19} /> {ordering ? "주문 처리 중..." : "주문하기"}

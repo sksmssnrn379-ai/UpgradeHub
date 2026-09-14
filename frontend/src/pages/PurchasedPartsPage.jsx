@@ -38,7 +38,126 @@ function PurchasedPartsPage() {
   const [messageType, setMessageType] =
     useState("");
 
-  useEffect
+  useEffect(() => {
+  let active = true;
+
+  async function loadPurchasedParts() {
+    setLoading(true);
+    setMessage("");
+    setMessageType("");
+
+    try {
+      const purchasedPartsResponse =
+        await api.get(
+          "/mypc/purchased-parts"
+        );
+
+      if (!active) {
+        return;
+      }
+
+      const purchasedParts =
+        Array.isArray(
+          purchasedPartsResponse.data
+        )
+          ? purchasedPartsResponse.data
+          : [];
+
+      setParts(purchasedParts);
+
+      try {
+        const myPcResponse =
+          await api.get("/mypc/me");
+
+        if (active) {
+          setMyPc(myPcResponse.data);
+        }
+      } catch (myPcError) {
+        if (!active) {
+          return;
+        }
+
+        if (
+          myPcError.response?.status === 401
+        ) {
+          localStorage.removeItem(
+            "token"
+          );
+
+          navigate("/login", {
+            state: {
+              from:
+                "/mypc/purchased-parts",
+            },
+            replace: true,
+          });
+
+          return;
+        }
+
+        const isMyPcNotRegistered =
+          myPcError.response?.status ===
+            400 &&
+          myPcError.response?.data
+            ?.message ===
+            "등록된 MY PC가 없습니다.";
+
+        if (isMyPcNotRegistered) {
+          setMyPc(null);
+          return;
+        }
+
+        console.error(
+          "MY PC 조회 실패:",
+          myPcError
+        );
+
+        setMyPc(null);
+      }
+    } catch (error) {
+      if (!active) {
+        return;
+      }
+
+      if (
+        error.response?.status === 401
+      ) {
+        localStorage.removeItem(
+          "token"
+        );
+
+        navigate("/login", {
+          state: {
+            from:
+              "/mypc/purchased-parts",
+          },
+          replace: true,
+        });
+
+        return;
+      }
+
+      setParts([]);
+
+      setMessage(
+        error.response?.data?.message ||
+          "구매한 부품을 불러오지 못했습니다."
+      );
+
+      setMessageType("error");
+    } finally {
+      if (active) {
+        setLoading(false);
+      }
+    }
+  }
+
+  loadPurchasedParts();
+
+  return () => {
+    active = false;
+  };
+}, [navigate]);
 
   function isInstalledPart(part) {
   if (!myPc || !part) {
@@ -188,19 +307,15 @@ function PurchasedPartsPage() {
           </p>
         </section>
 
-        {message && (
-          <div
-            role="status"
-            className={
-              "mb-6 rounded-xl border p-4 " +
-              (messageType === "success"
-                ? "border-green-500/30 bg-green-500/10 text-green-300"
-                : "border-red-500/30 bg-red-500/10 text-red-300")
-            }
-          >
-            {message}
-          </div>
-        )}
+        {message &&
+  messageType === "success" && (
+    <div
+      role="status"
+      className="mb-6 rounded-xl border border-green-500/30 bg-green-500/10 p-4 text-green-300"
+    >
+      {message}
+    </div>
+  )}
 
         {loading ? (
   <div className="rounded-2xl border border-slate-800 bg-slate-900 p-16 text-center text-slate-400">

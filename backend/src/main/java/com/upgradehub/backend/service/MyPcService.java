@@ -186,49 +186,32 @@ public class MyPcService {
         purchasedPartRepository;
 
         @Transactional(readOnly = true)
-        public List<PurchasedPartResponse>
-        getPurchasedParts(Long userId) {
+public List<PurchasedPartResponse> getPurchasedParts(String email) {
 
-        return purchasedPartRepository
-                .findAllByUserIdOrderByPurchasedAtDesc(
-                        userId
-                )
-                .stream()
-                .map(purchasedPart -> {
-                        Product product =
-                                purchasedPart.getProduct();
+    User user = userRepository.findByEmail(email)
+            .orElseThrow(() ->
+                    new RuntimeException("사용자를 찾을 수 없습니다.")
+            );
 
-                        return PurchasedPartResponse
-                                .builder()
-                                .purchasedPartId(
-                                        purchasedPart.getId()
-                                )
-                                .quantity(
-                                        purchasedPart.getQuantity()
-                                )
-                                .purchasedAt(
-                                        purchasedPart.getPurchasedAt()
-                                )
-                                .productId(
-                                        product.getId()
-                                )
-                                .name(
-                                        product.getName()
-                                )
-                                .brand(
-                                        product.getBrand()
-                                )
-                                .category(
-                                        product.getCategory()
-                                )
-                                .price(
-                                        product.getPrice()
-                                )
-                                .performanceScore(
-                                        product.getPerformanceScore()
-                                )
-                                .build();
-                })
-                .toList();
-        }
+    return purchasedPartRepository
+            .findAllByUserIdOrderByPurchasedAtDesc(user.getId())
+            .stream()
+            .map(purchasedPart -> {
+                Product product = purchasedPart.getProduct();
+
+                return PurchasedPartResponse
+                        .builder()
+                        .purchasedPartId(purchasedPart.getId())
+                        .quantity(purchasedPart.getQuantity())
+                        .purchasedAt(purchasedPart.getPurchasedAt())
+                        .productId(product.getId())
+                        .name(product.getName())
+                        .brand(product.getBrand())
+                        .category(product.getCategory())
+                        .price(product.getPrice())
+                        .performanceScore(product.getPerformanceScore())
+                        .build();
+            })
+            .toList();
+}
 }

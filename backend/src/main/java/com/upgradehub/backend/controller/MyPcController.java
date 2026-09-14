@@ -12,7 +12,6 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
-import com.upgradehub.backend.service.CurrentUserService;
 
 @RestController
 @RequestMapping("/mypc")
@@ -20,7 +19,6 @@ import com.upgradehub.backend.service.CurrentUserService;
 public class MyPcController {
 
     private final MyPcService myPcService;
-    private final CurrentUserService currentUserService;
     /*
      * 로그인한 사용자의 MY PC 조회
      */

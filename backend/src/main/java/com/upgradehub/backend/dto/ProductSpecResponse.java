@@ -18,4 +18,9 @@ public class ProductSpecResponse {
     private Integer powerCapacity;
     private String gpuInterface;
     private String storageInterface;
+    private Integer performanceScore;
+    private Double benchmarkScore;
+    private String benchmarkType;
+    private String benchmarkSource;
+    private LocalDate benchmarkUpdatedAt;
 }

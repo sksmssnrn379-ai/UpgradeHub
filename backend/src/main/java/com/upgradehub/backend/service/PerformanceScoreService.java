@@ -89,8 +89,12 @@ public class PerformanceScoreService {
         productRepository.saveAll(products);
     }
     @Transactional
-    public void recalculateAll() {
+        public void recalculateAll() {
         recalculateCategory("CPU");
         recalculateCategory("GPU");
-    }
+        recalculateCategory("RAM");
+        recalculateCategory("SSD");
+        recalculateCategory("MOTHERBOARD");
+        recalculateCategory("POWER");
+        }
 }

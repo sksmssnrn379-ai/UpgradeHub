@@ -147,26 +147,34 @@ public class ProductService {
         Product product
         ) {
         return ProductResponse.builder()
-                .id(product.getId())
-                .name(product.getName())
-                .brand(product.getBrand())
-                .price(product.getPrice())
-                .stock(product.getStock())
-                .category(product.getCategory())
-                
-                .benchmarkScore(
-                        product.getBenchmarkScore()
-                )
-                .benchmarkType(
-                        product.getBenchmarkType()
-                )
-                .benchmarkSource(
-                        product.getBenchmarkSource()
-                )
-                .benchmarkUpdatedAt(
-                        product.getBenchmarkUpdatedAt()
-                )
-                .build();
+        .id(product.getId())
+        .name(product.getName())
+        .brand(product.getBrand())
+        .price(product.getPrice())
+        .stock(product.getStock())
+        .category(product.getCategory())
+
+        .performanceScore(
+                product.getPerformanceScore()
+        )
+
+        .benchmarkScore(
+                product.getBenchmarkScore()
+        )
+
+        .benchmarkType(
+                product.getBenchmarkType()
+        )
+
+        .benchmarkSource(
+                product.getBenchmarkSource()
+        )
+
+        .benchmarkUpdatedAt(
+                product.getBenchmarkUpdatedAt()
+        )
+
+        .build();
         }
         public ProductResponse updateProduct(
         Long id,

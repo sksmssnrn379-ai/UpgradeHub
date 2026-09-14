@@ -1,21 +1,2 @@
-@baseUrl = https://emptyplace.duckdns.org
-@adminToken = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuZXd1c2VyQHRlc3QuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzg5MzczNjg2LCJleHAiOjE3ODkzNzcyODZ9.WPpmiFZvx-Zvswb7ujI17AZm6ylV75c9qVJuuamiLf8
-
-
-### i5-12400F 벤치마크 입력
-### i5-14600K 벤치마크 입력
-PUT {{baseUrl}}/products/5
-Authorization: Bearer {{adminToken}}
-Content-Type: application/json
-
-{
-  "name": "Intel Core i5-14600K",
-  "brand": "Intel",
-  "price": 349000,
-  "stock": 7,
-  "category": "CPU",
-  "benchmarkScore": 39000.0,
-  "benchmarkType": "CPU_MULTI_CORE",
-  "benchmarkSource": "관리자가 확인한 동일 기준 CPU 벤치마크",
-  "benchmarkUpdatedAt": "2026-09-14"
-}
+POST https://emptyplace.duckdns.org/admin/performance-scores/recalculate
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuZXd1c2VyQHRlc3QuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzg5Mzc1OTI0LCJleHAiOjE3ODkzNzk1MjR9.kSGAJMWpCn75xZYENP2eeo5h46nL_ogSBguR6NJ_lTE

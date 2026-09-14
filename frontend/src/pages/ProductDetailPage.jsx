@@ -578,8 +578,10 @@ function ProductDetailPage() {
                   </p>
 
                   <p className="mt-2 text-lg font-black text-violet-400">
-                    {product.performanceScore ??
-                      "정보 없음"}
+                    {product.performanceScore !== null &&
+                    product.performanceScore !== undefined
+                      ? product.performanceScore + " / 100"
+                      : "정보 없음"}
                   </p>
                 </div>
               </div>

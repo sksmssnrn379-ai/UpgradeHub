@@ -184,6 +184,12 @@ public class SecurityConfig {
                                 "/ai/recommend"
                         )
                         .authenticated()
+                        
+                        .requestMatchers(
+                        HttpMethod.POST,
+                        "/admin/performance-scores/recalculate"
+                        )
+                        .hasRole("ADMIN")
 
                         // 나머지 요청
                         .anyRequest()

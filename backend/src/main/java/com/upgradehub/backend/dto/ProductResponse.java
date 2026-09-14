@@ -14,4 +14,8 @@ public class ProductResponse {
     private Integer stock;
     private String category;
     private Integer performanceScore;
+    private Double benchmarkScore;
+    private String benchmarkType;
+    private String benchmarkSource;
+    private LocalDate benchmarkUpdatedAt;
 }

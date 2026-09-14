@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -31,4 +32,9 @@ public class ProductRequest {
     @NotNull(message = "성능 점수를 입력해 주세요.")
     @Min(value = 1, message = "성능 점수는 1 이상이어야 합니다.")
     private Integer performanceScore;
+
+    private Double benchmarkScore;
+    private String benchmarkType;
+    private String benchmarkSource;
+    private LocalDate benchmarkUpdatedAt;
 }

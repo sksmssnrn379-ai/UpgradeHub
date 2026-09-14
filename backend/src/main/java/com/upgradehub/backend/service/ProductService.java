@@ -14,7 +14,8 @@ import java.util.List;
 public class ProductService {
 
     private final ProductRepository productRepository;
-
+    private final PerformanceScoreService
+        performanceScoreService;    
     // 전체 상품 조회
     public List<ProductResponse> getProducts(
         String keyword,
@@ -73,54 +74,54 @@ public class ProductService {
 
     // 상품 등록
     public ProductResponse createProduct(
-            ProductRequest request
-    ) {
-
+        ProductRequest request
+        ) {
         Product product = Product.builder()
                 .name(request.getName())
                 .brand(request.getBrand())
                 .price(request.getPrice())
                 .stock(request.getStock())
                 .category(
-                        request.getCategory().toUpperCase()
+                        request.getCategory()
+                                .trim()
+                                .toUpperCase()
                 )
-                .performanceScore(
-                        request.getPerformanceScore()
+                .benchmarkScore(
+                        request.getBenchmarkScore()
+                )
+                .benchmarkType(
+                        request.getBenchmarkType()
+                )
+                .benchmarkSource(
+                        request.getBenchmarkSource()
+                )
+                .benchmarkUpdatedAt(
+                        request.getBenchmarkUpdatedAt()
                 )
                 .build();
 
         Product savedProduct =
                 productRepository.save(product);
 
-        return toResponse(savedProduct);
-    }
+        performanceScoreService
+                .recalculateCategory(
+                        savedProduct.getCategory()
+                );
 
-    // 상품 수정
-    public ProductResponse updateProduct(
-            Long id,
-            ProductRequest request
-    ) {
+        Product recalculatedProduct =
+                productRepository
+                        .findById(savedProduct.getId())
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "상품을 찾을 수 없습니다."
+                                )
+                        );
 
-        Product product = findProduct(id);
-
-        product.setName(request.getName());
-        product.setBrand(request.getBrand());
-        product.setPrice(request.getPrice());
-        product.setStock(request.getStock());
-
-        product.setCategory(
-                request.getCategory().toUpperCase()
+        return toResponse(
+                recalculatedProduct
         );
-
-        product.setPerformanceScore(
-                request.getPerformanceScore()
-        );
-
-        Product updatedProduct =
-                productRepository.save(product);
-
-        return toResponse(updatedProduct);
-    }
+        }
+        
 
     // 상품 삭제
     public void deleteProduct(Long id) {
@@ -143,17 +144,30 @@ public class ProductService {
 
     // Product 엔티티를 ProductResponse DTO로 변환
     private ProductResponse toResponse(
-            Product product
-    ) {
-
-        return new ProductResponse(
-                product.getId(),
-                product.getName(),
-                product.getBrand(),
-                product.getPrice(),
-                product.getStock(),
-                product.getCategory(),
-                product.getPerformanceScore()
-        );
-    }
+        Product product
+        ) {
+        return ProductResponse.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .brand(product.getBrand())
+                .price(product.getPrice())
+                .stock(product.getStock())
+                .category(product.getCategory())
+                .performanceScore(
+                        product.getPerformanceScore()
+                )
+                .benchmarkScore(
+                        product.getBenchmarkScore()
+                )
+                .benchmarkType(
+                        product.getBenchmarkType()
+                )
+                .benchmarkSource(
+                        product.getBenchmarkSource()
+                )
+                .benchmarkUpdatedAt(
+                        product.getBenchmarkUpdatedAt()
+                )
+                .build();
+        }       
 }

@@ -2,6 +2,7 @@ package com.upgradehub.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -26,4 +27,15 @@ public class Product {
     private String category;
 
     private Integer performanceScore;   
+    @Column
+    private Double benchmarkScore;
+
+    @Column(length = 50)
+    private String benchmarkType;
+
+    @Column(length = 100)
+    private String benchmarkSource;
+
+    @Column
+    private LocalDate benchmarkUpdatedAt;
 }

@@ -10,6 +10,8 @@ import java.util.List;
 import com.upgradehub.backend.dto.MyPcPartRequest;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.security.core.Authentication;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/mypc")
@@ -82,4 +84,20 @@ public class MyPcController {
                 request
         );
     }
+    @GetMapping("/mypc/purchased-parts")
+        public ResponseEntity<List<PurchasedPartResponse>>
+        getPurchasedParts(
+                Authentication authentication
+        ) {
+        Long userId =
+                currentUserService.getUserId(
+                        authentication
+                );
+
+        return ResponseEntity.ok(
+                myPcService.getPurchasedParts(
+                        userId
+                )
+        );
+        }
 }

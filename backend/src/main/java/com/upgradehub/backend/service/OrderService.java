@@ -17,6 +17,10 @@ import com.upgradehub.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.upgradehub.backend.entity.PurchasedPart;
+import com.upgradehub.backend.repository.PurchasedPartRepository;
+
+import java.time.LocalDateTime;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,6 +119,8 @@ public class OrderService {
                             - cartItem.getQuantity()
             );
 
+            addPurchasedPart(user,product,cartItem.getQuantity());
+
             itemResponses.add(
                     toItemResponse(savedOrderItem)
             );
@@ -203,4 +209,42 @@ public class OrderService {
                 orderItem.getSubtotal()
         );
     }
+    private final PurchasedPartRepository
+        purchasedPartRepository;
+
+    private void addPurchasedPart(
+        User user,
+        Product product,
+        int quantity
+        ) {
+        PurchasedPart purchasedPart =
+                purchasedPartRepository
+                        .findByUserIdAndProductId(
+                                user.getId(),
+                                product.getId()
+                        )
+                        .orElseGet(() ->
+                                PurchasedPart.builder()
+                                        .user(user)
+                                        .product(product)
+                                        .quantity(0)
+                                        .purchasedAt(
+                                                LocalDateTime.now()
+                                        )
+                                        .build()
+                        );
+
+        purchasedPart.setQuantity(
+                purchasedPart.getQuantity() +
+                        quantity
+        );
+
+        purchasedPart.setPurchasedAt(
+                LocalDateTime.now()
+        );
+
+        purchasedPartRepository.save(
+                purchasedPart
+        );
+        }       
 }

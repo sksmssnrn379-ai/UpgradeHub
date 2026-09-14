@@ -100,10 +100,12 @@ public class SecurityConfig {
                         // MY PC 조회
                         .requestMatchers(
                                 HttpMethod.GET,
+                                "/mypc/purchased-parts",
                                 "/mypc/me",
                                 "/mypc/{id}"
                         )
                         .authenticated()
+                                                
 
                         // MY PC 등록
                         .requestMatchers(

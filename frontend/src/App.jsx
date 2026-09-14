@@ -14,7 +14,7 @@ import MyPcPage from "./pages/MyPcPage.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import ComparePage from "./pages/ComparePage.jsx";
 import AdvisorPage from "./pages/AdvisorPage.jsx";
-
+import PurchasedPartsPage from "./pages/PurchasedPartsPage.jsx";
 function App() {
   return (
     <Routes>
@@ -99,7 +99,16 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/mypc/purchased-parts"
+        element={
+          <ProtectedRoute>
+            <PurchasedPartsPage />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
+    
   );
 }
 

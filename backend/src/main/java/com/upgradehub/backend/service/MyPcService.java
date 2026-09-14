@@ -14,6 +14,10 @@ import com.upgradehub.backend.repository.OrderItemRepository;
 import com.upgradehub.backend.entity.OrderStatus;
 import java.util.List;
 import com.upgradehub.backend.dto.MyPcPartRequest;
+import com.upgradehub.backend.repository.PurchasedPartRepository;
+import org.springframework.transaction.annotation.Transactional;
+
+
 @Service
 @RequiredArgsConstructor
 public class MyPcService {
@@ -211,5 +215,57 @@ public class MyPcService {
         }                       
 
         return myPcRepository.save(myPc);
-        }               
+        }             
+        private final PurchasedPartRepository
+        purchasedPartRepository;
+
+        @Transactional(readOnly = true)
+        public List<PurchasedPartResponse>
+        getPurchasedParts(Long userId) {
+
+        return purchasedPartRepository
+                .findAllByUserIdOrderByPurchasedAtDesc(
+                        userId
+                )
+                .stream()
+                .map(purchasedPart -> {
+                        Product product =
+                                purchasedPart.getProduct();
+
+                        return PurchasedPartResponse
+                                .builder()
+                                .purchasedPartId(
+                                        purchasedPart.getId()
+                                )
+                                .quantity(
+                                        purchasedPart.getQuantity()
+                                )
+                                .purchasedAt(
+                                        purchasedPart.getPurchasedAt()
+                                )
+                                .productId(
+                                        product.getId()
+                                )
+                                .name(
+                                        product.getName()
+                                )
+                                .brand(
+                                        product.getBrand()
+                                )
+                                .category(
+                                        product.getCategory()
+                                )
+                                .price(
+                                        product.getPrice()
+                                )
+                                .performanceScore(
+                                        product.getPerformanceScore()
+                                )
+                                .imageUrl(
+                                        product.getImageUrl()
+                                )
+                                .build();
+                })
+                .toList();
+        }
 }

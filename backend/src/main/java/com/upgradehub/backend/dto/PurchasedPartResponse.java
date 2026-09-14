@@ -12,7 +12,6 @@ public class PurchasedPartResponse {
 
     private Long orderId;
     private Long productId;
-    private Long productId;
     private String productName;
     private String brand;
     private String category;

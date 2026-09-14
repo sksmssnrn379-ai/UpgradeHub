@@ -88,15 +88,13 @@ public class MyPcController {
         getPurchasedParts(
                 Authentication authentication
         ) {
-        Long userId =
-                currentUserService.getUserId(
-                        authentication
-                );
+        @GetMapping("/purchased-parts")
+public List<PurchasedPartResponse> getPurchasedParts(
+        Authentication authentication
+) {
+    String email = authentication.getName();
 
-        return ResponseEntity.ok(
-                myPcService.getPurchasedParts(
-                        userId
-                )
-        );
+    return myPcService.getPurchasedParts(email);
+}
         }
 }

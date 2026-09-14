@@ -192,7 +192,14 @@ public class SecurityConfig {
                         "/admin/performance-scores/recalculate"
                         )
                         .hasRole("ADMIN")
-
+                        
+                        .requestMatchers(
+                        HttpMethod.POST,
+                        "/payments/prepare",
+                        "/payments/confirm"
+                        )
+                        .authenticated()
+                        
                         // 나머지 요청
                         .anyRequest()
                         .permitAll()

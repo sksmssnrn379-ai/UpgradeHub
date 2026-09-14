@@ -19,7 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.upgradehub.backend.entity.PurchasedPart;
 import com.upgradehub.backend.repository.PurchasedPartRepository;
+import com.upgradehub.backend.dto.PaymentPrepareResponse;
 
+import java.util.UUID;
 import java.time.LocalDateTime;
 
 import java.util.ArrayList;
@@ -245,5 +247,122 @@ public class OrderService {
         purchasedPartRepository.save(
                 purchasedPart
         );
-        }       
+        }
+        public PaymentPrepareResponse preparePayment(
+        String email
+) {
+    User user = userRepository
+            .findByEmail(email)
+            .orElseThrow(() ->
+                    new RuntimeException(
+                            "사용자를 찾을 수 없습니다."
+                    )
+            );
+
+    Cart cart = cartRepository
+            .findByUserEmail(email)
+            .orElseThrow(() ->
+                    new RuntimeException(
+                            "장바구니를 찾을 수 없습니다."
+                    )
+            );
+
+    List<CartItem> cartItems =
+            cartItemRepository.findByCartId(
+                    cart.getId()
+            );
+
+    if (cartItems.isEmpty()) {
+        throw new RuntimeException(
+                "장바구니가 비어 있습니다."
+        );
+    }
+
+    long totalPrice = 0L;
+
+    for (CartItem cartItem : cartItems) {
+        Product product =
+                cartItem.getProduct();
+
+        if (
+                product.getStock()
+                        < cartItem.getQuantity()
+        ) {
+            throw new RuntimeException(
+                    product.getName()
+                            + " 상품의 재고가 부족합니다."
+            );
+        }
+
+        totalPrice +=
+                product.getPrice()
+                        * cartItem.getQuantity();
+    }
+
+    String paymentOrderId =
+            "UPGRADEHUB_"
+                    + UUID.randomUUID()
+                            .toString()
+                            .replace("-", "");
+
+    Order order = Order.builder()
+            .user(user)
+            .totalPrice(totalPrice)
+            .status(
+                    OrderStatus.PAYMENT_PENDING
+            )
+            .paymentOrderId(
+                    paymentOrderId
+            )
+            .build();
+
+    Order savedOrder =
+            orderRepository.save(order);
+
+    for (CartItem cartItem : cartItems) {
+        Product product =
+                cartItem.getProduct();
+
+        int quantity =
+                cartItem.getQuantity();
+
+        long orderPrice =
+                product.getPrice();
+
+        OrderItem orderItem =
+                OrderItem.builder()
+                        .order(savedOrder)
+                        .product(product)
+                        .orderPrice(orderPrice)
+                        .quantity(quantity)
+                        .subtotal(
+                                orderPrice * quantity
+                        )
+                        .build();
+
+        orderItemRepository.save(orderItem);
+    }
+
+    String firstProductName =
+            cartItems.get(0)
+                    .getProduct()
+                    .getName();
+
+    String orderName =
+            cartItems.size() == 1
+                    ? firstProductName
+                    : firstProductName
+                            + " 외 "
+                            + (cartItems.size() - 1)
+                            + "건";
+
+    return new PaymentPrepareResponse(
+            savedOrder.getId(),
+            savedOrder.getPaymentOrderId(),
+            savedOrder.getTotalPrice(),
+            orderName,
+            user.getName(),
+            user.getEmail()
+    );
+}       
 }

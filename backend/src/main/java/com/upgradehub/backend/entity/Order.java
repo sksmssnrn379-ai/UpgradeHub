@@ -62,4 +62,28 @@ public class Order {
             status = OrderStatus.ORDERED;
         }
     }
+    @Column(
+        name = "payment_order_id",
+        unique = true,
+        length = 64
+)
+private String paymentOrderId;
+
+@Column(
+        name = "payment_key",
+        unique = true,
+        length = 200
+)
+private String paymentKey;
+
+@Column(
+        name = "payment_method",
+        length = 50
+)
+private String paymentMethod;
+
+@Column(
+        name = "paid_at"
+)
+private LocalDateTime paidAt;
 }

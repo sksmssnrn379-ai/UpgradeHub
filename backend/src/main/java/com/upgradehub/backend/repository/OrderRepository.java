@@ -17,4 +17,9 @@ public interface OrderRepository
             Long orderId,
             String email
     );
+    Optional<Order>
+        findByPaymentOrderIdAndUserEmail(
+                String paymentOrderId,
+                String email
+        );
 }

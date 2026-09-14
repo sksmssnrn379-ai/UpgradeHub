@@ -91,25 +91,17 @@ export default function CartPage() {
     }
   }
 
-  async function createOrder() {
-    if (cart.items.length === 0) {
-      setMessage("장바구니가 비어 있습니다.");
-      return;
-    }
-    if (!window.confirm("현재 장바구니 상품을 주문할까요?")) return;
-    setOrdering(true);
-    setMessage("");
-    try {
-      const response = await api.post("/orders");
-      window.alert(`주문이 완료되었습니다. 주문 번호: ${response.data.orderId}`);
-      await reloadCart();
-      navigate("/orders");
-    } catch (error) {
-      setMessage(error.response?.data?.message || "주문을 처리하지 못했습니다.");
-    } finally {
-      setOrdering(false);
-    }
+  function createOrder() {
+  if (cart.items.length === 0) {
+    setMessage(
+      "장바구니가 비어 있습니다."
+    );
+
+    return;
   }
+
+  navigate("/checkout");
+}
 
   function formatPrice(price) {
     return Number(price || 0).toLocaleString("ko-KR");

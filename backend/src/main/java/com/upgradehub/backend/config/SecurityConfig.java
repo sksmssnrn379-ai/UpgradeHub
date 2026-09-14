@@ -16,13 +16,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationFilter
+            jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(
@@ -30,15 +32,23 @@ public class SecurityConfig {
     ) throws Exception {
 
         http
-                .csrf(csrf -> csrf.disable())
+                .cors(cors ->
+                        cors.configurationSource(
+                                corsConfigurationSource()
+                        )
+                )
 
-                .cors(cors -> cors.configurationSource(
-                corsConfigurationSource()
-                ))
+                .csrf(csrf ->
+                        csrf.disable()
+                )
 
-                .formLogin(form -> form.disable())
+                .formLogin(form ->
+                        form.disable()
+                )
 
-                .httpBasic(basic -> basic.disable())
+                .httpBasic(basic ->
+                        basic.disable()
+                )
 
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
@@ -55,7 +65,7 @@ public class SecurityConfig {
                         )
                         .permitAll()
 
-                        // 상품 목록 및 상세 조회
+                        // 상품 목록 및 상품 상세 조회
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/products",
@@ -102,7 +112,14 @@ public class SecurityConfig {
                         )
                         .authenticated()
 
-                        // 로그인 사용자 부품 비교
+                        // MY PC 부품 변경
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/mypc/parts"
+                        )
+                        .authenticated()
+
+                        // 로그인 사용자의 부품 비교
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/compare/me",
@@ -110,9 +127,10 @@ public class SecurityConfig {
                         )
                         .authenticated()
 
+                        // 호환성 검사
                         .requestMatchers(
-                        HttpMethod.GET,
-                        "/compatibility/check"
+                                HttpMethod.GET,
+                                "/compatibility/check"
                         )
                         .authenticated()
 
@@ -133,8 +151,7 @@ public class SecurityConfig {
                         // 장바구니 수량 변경
                         .requestMatchers(
                                 HttpMethod.PUT,
-                                "/cart/items/{itemId}",
-                                "/mypc/parts"
+                                "/cart/items/{itemId}"
                         )
                         .authenticated()
 
@@ -153,12 +170,6 @@ public class SecurityConfig {
                         )
                         .authenticated()
 
-                        .requestMatchers(
-                        HttpMethod.POST,
-                        "/ai/recommend"
-                        )
-                        .authenticated()
-
                         // 주문 목록 및 상세 조회
                         .requestMatchers(
                                 HttpMethod.GET,
@@ -167,38 +178,44 @@ public class SecurityConfig {
                         )
                         .authenticated()
 
-                        // 그 외 요청
+                        // AI 구매 추천
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/ai/recommend"
+                        )
+                        .authenticated()
+
+                        // 나머지 요청
                         .anyRequest()
                         .permitAll()
                 )
 
-                .exceptionHandling(exception -> exception
+                .exceptionHandling(exception ->
+                        exception
 
-                        // JWT가 없거나 인증에 실패한 경우
-                        .authenticationEntryPoint(
-                                new HttpStatusEntryPoint(
-                                        HttpStatus.UNAUTHORIZED
+                                .authenticationEntryPoint(
+                                        new HttpStatusEntryPoint(
+                                                HttpStatus.UNAUTHORIZED
+                                        )
                                 )
-                        )
 
-                        // 로그인했지만 권한이 없는 경우
-                        .accessDeniedHandler(
-                                (
-                                        request,
-                                        response,
-                                        accessDeniedException
-                                ) -> response.sendError(
-                                        HttpStatus.FORBIDDEN.value(),
-                                        "접근 권한이 없습니다."
+                                .accessDeniedHandler(
+                                        (
+                                                request,
+                                                response,
+                                                exception
+                                        ) -> response.sendError(
+                                                HttpStatus.FORBIDDEN
+                                                        .value(),
+                                                "접근 권한이 없습니다."
+                                        )
                                 )
-                        )
                 )
 
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class
                 );
-                
 
         return http.build();
     }
@@ -209,16 +226,17 @@ public class SecurityConfig {
     }
 
     @Bean
-        public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource
+    corsConfigurationSource() {
 
         CorsConfiguration configuration =
                 new CorsConfiguration();
 
         configuration.setAllowedOrigins(
-        List.of(
-                "http://localhost:5173",
-                "https://main.xxxxxxxxx.amplifyapp.com"
-        )
+                List.of(
+                        "http://localhost:5173",
+                        "https://main.d33e7cb1duv204.amplifyapp.com"
+                )
         );
 
         configuration.setAllowedMethods(
@@ -234,11 +252,22 @@ public class SecurityConfig {
 
         configuration.setAllowedHeaders(
                 List.of(
-                        "*"
+                        "Authorization",
+                        "Content-Type",
+                        "Accept",
+                        "Origin",
+                        "X-Requested-With"
+                )
+        );
+
+        configuration.setExposedHeaders(
+                List.of(
+                        "Authorization"
                 )
         );
 
         configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();
@@ -249,5 +278,5 @@ public class SecurityConfig {
         );
 
         return source;
-        }       
+    }
 }

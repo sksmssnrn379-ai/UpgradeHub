@@ -260,8 +260,7 @@ public class MyPcService {
                                     product
                                             .getPerformanceScore()
                             )
-                            .imageUrl(
-                                    product.getImageUrl()
+                            
                             )
                             .build();
                 })

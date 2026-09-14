@@ -200,13 +200,12 @@ public class OrderService {
         Product product = orderItem.getProduct();
 
         return new OrderItemResponse(
-                orderItem.getId(),
-                product.getId(),
-                product.getName(),
-                product.getBrand(),
-                orderItem.getOrderPrice(),
-                orderItem.getQuantity(),
-                orderItem.getSubtotal()
+        orderItem.getProduct().getId(),
+        orderItem.getProduct().getName(),
+        orderItem.getProduct().getBrand(),
+        orderItem.getOrderPrice(),
+        orderItem.getQuantity(),
+        orderItem.getOrderPrice() * orderItem.getQuantity()
         );
     }
     private final PurchasedPartRepository

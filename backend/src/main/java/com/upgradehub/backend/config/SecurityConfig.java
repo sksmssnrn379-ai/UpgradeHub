@@ -192,21 +192,18 @@ public class SecurityConfig {
 
                 .exceptionHandling(exception ->
                         exception
-
                                 .authenticationEntryPoint(
                                         new HttpStatusEntryPoint(
                                                 HttpStatus.UNAUTHORIZED
                                         )
                                 )
-
                                 .accessDeniedHandler(
                                         (
                                                 request,
                                                 response,
-                                                exception
+                                                ex
                                         ) -> response.sendError(
-                                                HttpStatus.FORBIDDEN
-                                                        .value(),
+                                                HttpStatus.FORBIDDEN.value(),
                                                 "접근 권한이 없습니다."
                                         )
                                 )

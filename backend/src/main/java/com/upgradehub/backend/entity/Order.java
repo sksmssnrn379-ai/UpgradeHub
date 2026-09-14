@@ -17,6 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -28,15 +29,10 @@ import java.time.LocalDateTime;
 @Table(name = "orders")
 public class Order {
 
-    @Enumerated(EnumType.STRING)
-        @Column(
-                nullable = false,
-                length = 30
-        )
-        private OrderStatus status;
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(
+            strategy = GenerationType.IDENTITY
+    )
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,50 +42,59 @@ public class Order {
     )
     private User user;
 
-    @Column(nullable = false)
+    @Column(
+            name = "total_price",
+            nullable = false
+    )
     private Long totalPrice;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    @Builder.Default
-    private OrderStatus status = OrderStatus.ORDERED;
+    @Column(
+            name = "status",
+            nullable = false,
+            length = 30
+    )
+    private OrderStatus status;
 
-    @Column(nullable = false)
+    @Column(
+            name = "ordered_at",
+            nullable = false
+    )
     private LocalDateTime orderedAt;
+
+    @Column(
+            name = "payment_order_id",
+            unique = true,
+            length = 64
+    )
+    private String paymentOrderId;
+
+    @Column(
+            name = "payment_key",
+            unique = true,
+            length = 200
+    )
+    private String paymentKey;
+
+    @Column(
+            name = "payment_method",
+            length = 50
+    )
+    private String paymentMethod;
+
+    @Column(name = "paid_at")
+    private LocalDateTime paidAt;
 
     @PrePersist
     public void prePersist() {
-
         if (orderedAt == null) {
-            orderedAt = LocalDateTime.now();
+            orderedAt =
+                    LocalDateTime.now();
         }
 
         if (status == null) {
-            status = OrderStatus.ORDERED;
+            status =
+                    OrderStatus.ORDERED;
         }
     }
-    @Column(
-        name = "payment_order_id",
-        unique = true,
-        length = 64
-)
-private String paymentOrderId;
-
-@Column(
-        name = "payment_key",
-        unique = true,
-        length = 200
-)
-private String paymentKey;
-
-@Column(
-        name = "payment_method",
-        length = 50
-)
-private String paymentMethod;
-
-@Column(
-        name = "paid_at"
-)
-private LocalDateTime paidAt;
 }

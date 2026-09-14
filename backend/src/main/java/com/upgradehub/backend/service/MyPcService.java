@@ -141,12 +141,12 @@ public class MyPcService {
                 );
 
         MyPc myPc = myPcRepository
-                .findByUserEmail(email)
-                .orElseGet(() ->
-                        MyPc.builder()
-                                .user(user)
-                                .build()
-                );
+        .findByUserEmail(email)
+        .orElseGet(() ->
+                MyPc.builder()
+                        .user(user)
+                        .build()
+        );
 
         switch (category.toUpperCase()) {
 

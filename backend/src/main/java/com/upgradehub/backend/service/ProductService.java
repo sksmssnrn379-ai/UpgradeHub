@@ -169,5 +169,43 @@ public class ProductService {
                         product.getBenchmarkUpdatedAt()
                 )
                 .build();
+        }
+        public ProductResponse updateProduct(
+        Long id,
+        ProductRequest request
+        ) {
+        Product product = findProduct(id);
+
+        product.setName(request.getName());
+        product.setBrand(request.getBrand());
+        product.setPrice(request.getPrice());
+        product.setStock(request.getStock());
+        product.setCategory(
+                request.getCategory()
+                        .trim()
+                        .toUpperCase()
+        );
+
+        product.setBenchmarkScore(
+                request.getBenchmarkScore()
+        );
+        product.setBenchmarkType(
+                request.getBenchmarkType()
+        );
+        product.setBenchmarkSource(
+                request.getBenchmarkSource()
+        );
+        product.setBenchmarkUpdatedAt(
+                request.getBenchmarkUpdatedAt()
+        );
+
+        Product savedProduct =
+                productRepository.save(product);
+
+        performanceScoreService.recalculateCategory(
+                savedProduct.getCategory()
+        );
+
+        return toResponse(savedProduct);
         }       
 }

@@ -83,25 +83,6 @@ public class MyPcService {
 
         return myPcRepository.save(myPc);
     }
-    public List<PurchasedPartResponse> getPurchasedParts(
-        String email
-        ) {
-
-        return orderItemRepository
-                .findByOrderUserEmailOrderByOrderOrderedAtDesc(
-                        email
-                )
-                .stream()
-                .filter(orderItem ->
-                        isPcPart(
-                                orderItem
-                                        .getProduct()
-                                        .getCategory()
-                        )
-                )
-                .map(this::toPurchasedPartResponse)
-                .toList();
-        }
         private boolean isPcPart(
         String category
         ) {
@@ -117,22 +98,7 @@ public class MyPcService {
                 || category.equalsIgnoreCase("MOTHERBOARD")
                 || category.equalsIgnoreCase("POWER");
         }
-        private PurchasedPartResponse toPurchasedPartResponse(
-        OrderItem orderItem
-        ) {
-
-        return new PurchasedPartResponse(
-                orderItem.getOrder().getId(),
-                orderItem.getId(),
-                orderItem.getProduct().getId(),
-                orderItem.getProduct().getName(),
-                orderItem.getProduct().getBrand(),
-                orderItem.getProduct().getCategory(),
-                orderItem.getQuantity(),
-                orderItem.getOrderPrice(),
-                orderItem.getOrder().getOrderedAt()
-        );
-        }
+        
         public MyPc installPurchasedPart(
         String email,
         MyPcPartRequest request
@@ -260,9 +226,6 @@ public class MyPcService {
                                 )
                                 .performanceScore(
                                         product.getPerformanceScore()
-                                )
-                                .imageUrl(
-                                        product.getImageUrl()
                                 )
                                 .build();
                 })

@@ -17,7 +17,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -28,6 +27,13 @@ import java.time.LocalDateTime;
 @Builder
 @Table(name = "orders")
 public class Order {
+
+    @Enumerated(EnumType.STRING)
+        @Column(
+                nullable = false,
+                length = 30
+        )
+        private OrderStatus status;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

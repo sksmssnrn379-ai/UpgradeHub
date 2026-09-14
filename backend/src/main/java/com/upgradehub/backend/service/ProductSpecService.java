@@ -138,17 +138,23 @@ public class ProductSpecService {
         Product product = productSpec.getProduct();
 
         return new ProductSpecResponse(
-                productSpec.getId(),
-                product.getId(),
-                product.getName(),
-                product.getCategory(),
-                productSpec.getCpuSocket(),
-                productSpec.getMemoryType(),
-                productSpec.getPowerConsumption(),
-                productSpec.getRecommendedPower(),
-                productSpec.getPowerCapacity(),
-                productSpec.getGpuInterface(),
-                productSpec.getStorageInterface()
-        );
+        productSpec.getId(),
+        product.getId(),
+        product.getName(),
+        product.getCategory(),
+        productSpec.getCpuSocket(),
+        productSpec.getMemoryType(),
+        productSpec.getPowerConsumption(),
+        productSpec.getRecommendedPower(),
+        productSpec.getPowerCapacity(),
+        productSpec.getGpuInterface(),
+        productSpec.getStorageInterface(),
+
+        product.getPerformanceScore(),
+        product.getBenchmarkScore(),
+        product.getBenchmarkType(),
+        product.getBenchmarkSource(),
+        product.getBenchmarkUpdatedAt()
+);
     }
 }

@@ -114,50 +114,44 @@ function PurchasedPartsPage() {
   }, [navigate]);
 
   function isInstalledPart(part) {
-    if (!myPc || !part) {
-      return false;
-    }
-
-    const slotByCategory = {
-      CPU: "cpu",
-      GPU: "gpu",
-      RAM: "ram",
-      SSD: "ssd",
-      MOTHERBOARD: "motherboard",
-      POWER: "power",
-    };
-
-    const normalizedCategory = String(
-      part.category || ""
-    )
-      .trim()
-      .toUpperCase();
-
-    const slotKey =
-      slotByCategory[
-        normalizedCategory
-      ];
-
-    if (!slotKey) {
-      return false;
-    }
-
-    const installedPart =
-      myPc[slotKey];
-
-    if (
-      !installedPart ||
-      installedPart.id === null ||
-      installedPart.id === undefined
-    ) {
-      return false;
-    }
-
-    return (
-      String(installedPart.id) ===
-      String(part.productId)
-    );
+  if (!myPc || !part) {
+    return false;
   }
+
+  const slotByCategory = {
+    CPU: "cpu",
+    GPU: "gpu",
+    RAM: "ram",
+    SSD: "ssd",
+    MOTHERBOARD: "motherboard",
+    POWER: "power",
+  };
+
+  const category = String(
+    part.category || ""
+  )
+    .trim()
+    .toUpperCase();
+
+  const slotKey =
+    slotByCategory[category];
+
+  if (!slotKey) {
+    return false;
+  }
+
+  const installedPart =
+    myPc[slotKey];
+
+  if (!installedPart) {
+    return false;
+  }
+
+  return (
+    String(installedPart.id) ===
+    String(part.productId)
+  );
+}
 
   async function equipPart(
     purchasedPartId,
@@ -282,128 +276,146 @@ function PurchasedPartsPage() {
         )}
 
         {loading ? (
-          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-16 text-center text-slate-400">
-            구매한 부품을 불러오는
-            중입니다.
+  <div className="rounded-2xl border border-slate-800 bg-slate-900 p-16 text-center text-slate-400">
+    구매한 부품을 불러오는 중입니다.
+  </div>
+) : messageType === "error" ? (
+  <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-10 text-center">
+    <h2 className="text-xl font-bold text-red-300">
+      구매한 부품을 확인할 수 없습니다.
+    </h2>
+
+    <p className="mt-3 text-red-200">
+      {message}
+    </p>
+
+    <button
+      type="button"
+      onClick={() => {
+        window.location.reload();
+      }}
+      className="mt-6 rounded-xl bg-cyan-500 px-6 py-3 font-bold text-slate-950"
+    >
+      다시 불러오기
+    </button>
+  </div>
+) : parts.length === 0 ? (
+  <div className="rounded-2xl border border-slate-800 bg-slate-900 p-16 text-center">
+    <Package
+      size={50}
+      className="mx-auto text-slate-600"
+    />
+
+    <h2 className="mt-5 text-xl font-bold">
+      구매한 부품이 없습니다.
+    </h2>
+
+    <p className="mt-3 text-slate-400">
+      상품을 주문하면 구매한 부품
+      목록에 표시됩니다.
+    </p>
+
+    <Link
+      to="/products"
+      className="mt-6 inline-block rounded-xl bg-cyan-500 px-6 py-3 font-bold text-slate-950"
+    >
+      상품 둘러보기
+    </Link>
+  </div>
+) : (
+  <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    {parts.map((part) => {
+      const cardId =
+        part.purchasedPartId ??
+        part.productId;
+
+      const isCurrentEquipping =
+        String(equippingId) ===
+        String(cardId);
+
+      const isAnyEquipping =
+        equippingId !== null;
+
+      const isInstalled =
+        isInstalledPart(part);
+
+      return (
+        <article
+          key={cardId}
+          className={
+            "rounded-2xl border bg-slate-900 p-6 transition " +
+            (isInstalled
+              ? "border-green-500/50 shadow-lg shadow-green-500/5"
+              : "border-slate-800 hover:border-cyan-500/40")
+          }
+        >
+          <div className="flex items-center justify-between gap-3">
+            <span className="rounded-full bg-cyan-500/10 px-3 py-1 text-xs font-bold text-cyan-300">
+              {part.category}
+            </span>
+
+            {isInstalled && (
+              <span className="flex items-center gap-1 rounded-full border border-green-500/30 bg-green-500/10 px-3 py-1 text-xs font-bold text-green-400">
+                <CheckCircle2 size={14} />
+                장착됨
+              </span>
+            )}
           </div>
-        ) : parts.length === 0 ? (
-          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-16 text-center">
-            <Package
-              size={50}
-              className="mx-auto text-slate-600"
-            />
 
-            <h2 className="mt-5 text-xl font-bold">
-              구매한 부품이 없습니다.
-            </h2>
+          <h2 className="mt-5 min-h-14 text-xl font-bold">
+            {part.name ||
+              part.productName ||
+              "상품명 정보 없음"}
+          </h2>
 
-            <p className="mt-3 text-slate-400">
-              상품을 주문하면 구매한 부품
-              목록에 표시됩니다.
-            </p>
+          <p className="mt-2 text-slate-400">
+            {part.brand ||
+              "제조사 정보 없음"}
+          </p>
 
-            <Link
-              to="/products"
-              className="mt-6 inline-block rounded-xl bg-cyan-500 px-6 py-3 font-bold text-slate-950 transition hover:bg-cyan-400"
-            >
-              상품 둘러보기
-            </Link>
+          <div className="mt-5 flex justify-between border-t border-slate-800 pt-4 text-sm">
+            <span className="text-slate-500">
+              보유 수량
+            </span>
+
+            <strong>
+              {part.quantity ?? 0}개
+            </strong>
           </div>
-        ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {parts.map((part) => {
-              const cardId =
-                part.purchasedPartId ??
-                part.productId;
 
-              const isCurrentEquipping =
-                String(equippingId) ===
-                String(cardId);
-
-              const isAnyEquipping =
-                equippingId !== null;
-
-              const isInstalled =
-                isInstalledPart(part);
-
-              return (
-                <article
-                  key={cardId}
-                  className={
-                    "rounded-2xl border bg-slate-900 p-6 transition " +
-                    (isInstalled
-                      ? "border-green-500/50 shadow-lg shadow-green-500/5"
-                      : "border-slate-800 hover:border-cyan-500/40")
-                  }
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="rounded-full bg-cyan-500/10 px-3 py-1 text-xs font-bold text-cyan-300">
-                      {part.category}
-                    </span>
-
-                    {isInstalled && (
-                      <span className="flex items-center gap-1 rounded-full border border-green-500/30 bg-green-500/10 px-3 py-1 text-xs font-bold text-green-400">
-                        <CheckCircle2
-                          size={14}
-                        />
-                        장착됨
-                      </span>
-                    )}
-                  </div>
-
-                  <h2 className="mt-5 min-h-14 text-xl font-bold">
-                    {part.name}
-                  </h2>
-
-                  <p className="mt-2 text-slate-400">
-                    {part.brand ||
-                      "제조사 정보 없음"}
-                  </p>
-
-                  <div className="mt-5 flex justify-between border-t border-slate-800 pt-4 text-sm">
-                    <span className="text-slate-500">
-                      보유 수량
-                    </span>
-
-                    <strong>
-                      {part.quantity}개
-                    </strong>
-                  </div>
-
-                  <button
-                    type="button"
-                    disabled={
-                      isAnyEquipping ||
-                      isInstalled
-                    }
-                    onClick={() => {
-                      equipPart(
-                        cardId,
-                        part.productId
-                      );
-                    }}
-                    className={
-                      "mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-3 font-black transition disabled:cursor-not-allowed " +
-                      (isInstalled
-                        ? "border border-green-500/40 bg-green-500/10 text-green-400 opacity-100"
-                        : "bg-cyan-500 text-slate-950 hover:bg-cyan-400 disabled:opacity-50")
-                    }
-                  >
-                    <CheckCircle2
-                      size={18}
-                    />
-
-                    {isCurrentEquipping
-                      ? "장착 중..."
-                      : isInstalled
-                        ? "현재 장착됨"
-                        : "MY PC에 장착"}
-                  </button>
-                </article>
+          <button
+            type="button"
+            disabled={
+              isAnyEquipping ||
+              isInstalled
+            }
+            onClick={() => {
+              equipPart(
+                cardId,
+                part.productId
               );
-            })}
-          </div>
-        )}
+            }}
+            className={
+              "mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-3 font-black transition disabled:cursor-not-allowed " +
+              (isInstalled
+                ? "border border-green-500/40 bg-green-500/10 text-green-400 opacity-100"
+                : "bg-cyan-500 text-slate-950 hover:bg-cyan-400 disabled:opacity-50")
+            }
+          >
+            <CheckCircle2 size={18} />
+
+            {isCurrentEquipping
+              ? "장착 중..."
+              : isInstalled
+                ? "현재 장착됨"
+                : "MY PC에 장착"}
+          </button>
+        </article>
+      );
+    })}
+  </div>
+)}
+          
       </main>
     </div>
   );

@@ -24,4 +24,5 @@ public class ProductResponse {
     private String benchmarkType;
     private String benchmarkSource;
     private LocalDate benchmarkUpdatedAt;
+    private String imageUrl;
 }

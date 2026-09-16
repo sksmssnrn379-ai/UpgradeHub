@@ -56,4 +56,6 @@ public class ProductRequest {
     private String benchmarkSource;
 
     private LocalDate benchmarkUpdatedAt;
+
+    private String imageUrl;
 }

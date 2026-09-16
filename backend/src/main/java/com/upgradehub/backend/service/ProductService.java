@@ -153,7 +153,7 @@ public class ProductService {
         .price(product.getPrice())
         .stock(product.getStock())
         .category(product.getCategory())
-
+        .imageUrl(product.getImageUrl())
         .performanceScore(
                 product.getPerformanceScore()
         )

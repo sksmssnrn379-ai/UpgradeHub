@@ -38,4 +38,10 @@ public class Product {
 
     @Column
     private LocalDate benchmarkUpdatedAt;
+    
+    @Column(
+        name = "image_url",
+        length = 500
+    )
+    private String imageUrl;
 }

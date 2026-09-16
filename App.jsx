@@ -6,6 +6,10 @@ import LoginPage from "./pages/LoginPage.jsx";
 import ProductsPage from "./pages/ProductsPage.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
 
+import CheckoutPage from "./pages/CheckoutPage.jsx";
+import PaymentSuccessPage from "./pages/PaymentSuccessPage.jsx";
+import PaymentFailPage from "./pages/PaymentFailPage.jsx";
+
 function App() {
   return (
     <Routes>
@@ -32,6 +36,28 @@ function App() {
       <Route
         path="/*"
         element={<Navigate to="/login" replace />}
+      />
+      <Route
+        path="/checkout"
+        element={
+          <ProtectedRoute>
+            <CheckoutPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/payment/success"
+        element={
+          <ProtectedRoute>
+            <PaymentSuccessPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/payment/fail"
+        element={<PaymentFailPage />}
       />
     </Routes>
   );

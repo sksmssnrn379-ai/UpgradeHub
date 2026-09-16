@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/upgradehub
+    url: jdbc:mysql://rds-endpoint.amazonaws.com:3306/upgradehub
     username: upgradehub_user
     password: Suv2103@
 

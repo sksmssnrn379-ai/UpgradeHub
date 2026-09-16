@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/upgradehub
-    username: root
-    password: 1234
+    username: upgradehub_user
+    password: Suv2103@
 
   jpa:
     hibernate:

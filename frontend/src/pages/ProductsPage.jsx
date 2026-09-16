@@ -9,7 +9,9 @@ import {
   ShoppingCart,
   Zap,
 } from "lucide-react";
-
+import {
+  handleProductImageError,
+} from "../utils/productImage.js";
 import {
   useEffect,
   useState,
@@ -528,26 +530,38 @@ function ProductsPage() {
                     );
 
                   return (
-                    <article
-                      key={product.id}
-                      className="group overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 transition hover:-translate-y-1 hover:border-cyan-500/50 hover:shadow-xl hover:shadow-cyan-950/20"
-                    >
-                      <div className="relative flex h-48 items-center justify-center bg-slate-800">
-                        <ProductIcon
-                          size={76}
-                          className="text-cyan-400 transition group-hover:scale-110"
-                        />
+  <article
+    key={product.id}
+    className="group overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 transition hover:-translate-y-1 hover:border-cyan-500/50 hover:shadow-xl hover:shadow-cyan-950/20"
+  >
+    <div className="relative flex h-52 items-center justify-center overflow-hidden bg-slate-800">
+      {product.imageUrl ? (
+    <img
+      src={product.imageUrl}
+      alt={product.name}
+      onError={handleProductImageError}
+      className="max-h-full max-w-full object-contain transition duration-300 group-hover:scale-105"
+    />
+  ) : (
+    <ProductIcon
+      size={76}
+      className="text-cyan-400 transition duration-300 group-hover:scale-110"
+    />
+  )}
 
-                        <span className="absolute left-4 top-4 rounded-full bg-slate-950/80 px-3 py-1 text-xs font-bold text-cyan-300">
-                          {product.category}
-                        </span>
+      <span className="absolute left-4 top-4 rounded-full bg-slate-950/80 px-3 py-1 text-xs font-bold text-cyan-300">
+        {product.category}
+      </span>
 
-                        {product.stock === 0 && (
-                          <span className="absolute right-4 top-4 rounded-full bg-red-500 px-3 py-1 text-xs font-bold text-white">
-                            품절
-                          </span>
-                        )}
-                      </div>
+      {product.stock === 0 && (
+        <span className="absolute right-4 top-4 rounded-full bg-red-500 px-3 py-1 text-xs font-bold text-white">
+          품절
+        </span>
+      )}
+    </div>
+
+    <div className="p-5">
+
 
                       <div className="p-5">
                         <p className="text-sm font-semibold text-slate-500">
@@ -625,10 +639,10 @@ function ProductsPage() {
                             </>
                           )}
                         </button>
-                      </div>
+                      </div></div>
                     </article>
                   );
-                })}
+          })}
               </div>
             )}
         </section>

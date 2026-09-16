@@ -588,25 +588,33 @@ function ProductDetailPage() {
           </p>
         </section>
 
-        <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <section className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
-            <div className="relative flex min-h-80 items-center justify-center bg-slate-800">
-              <ProductIcon
-                size={130}
-                className="text-cyan-400"
-              />
+<div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+  <section className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
+    <div className="relative flex min-h-80 items-center justify-center overflow-hidden bg-slate-800">
+      {product.imageUrl ? (
+        <img
+          src={product.imageUrl}
+          alt={product.name}
+          className="max-h-80 max-w-full object-contain"
+        />
+      ) : (
+        <div className="flex flex-col items-center gap-4">
+          <ProductIcon
+            size={96}
+            strokeWidth={1.25}
+            className="text-cyan-400"
+            aria-hidden="true"
+          />
 
-              <span className="absolute left-6 top-6 rounded-full border border-cyan-500/30 bg-slate-950/80 px-4 py-2 text-sm font-bold text-cyan-300">
-                {product.category}
-              </span>
+          <span className="text-sm text-slate-500">
+            등록된 상품 이미지가 없습니다.
+          </span>
+        </div>
+      )}
+    </div>
+  </section>
 
-              {product.stock === 0 && (
-                <span className="absolute right-6 top-6 rounded-full bg-red-500 px-4 py-2 text-sm font-bold">
-                  품절
-                </span>
-              )}
-            </div>
-
+      <section className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
             <div className="p-7">
               <p className="text-sm font-bold tracking-wider text-cyan-400">
                 {product.brand}
@@ -1007,7 +1015,7 @@ function ProductDetailPage() {
           </section>
         </div>
       </main>
-    </div>
+      </div>
   );
 }
 

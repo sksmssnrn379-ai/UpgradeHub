@@ -15,7 +15,9 @@ import {
   Database,
   Info
 } from "lucide-react";
-
+import {
+  handleProductImageError,
+} from "../utils/productImage.js";
 import {
   useEffect,
   useState,
@@ -592,12 +594,13 @@ function ProductDetailPage() {
   <section className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
     <div className="relative flex min-h-80 items-center justify-center overflow-hidden bg-slate-800">
       {product.imageUrl ? (
-        <img
-          src={product.imageUrl}
-          alt={product.name}
-          className="max-h-80 max-w-full object-contain"
-        />
-      ) : (
+          <img
+            src={product.imageUrl}
+            alt={product.name}
+            onError={handleProductImageError}
+            className="max-h-full max-w-full object-contain transition duration-300 group-hover:scale-105"
+          />
+        ) : (
         <div className="flex flex-col items-center gap-4">
           <ProductIcon
             size={96}

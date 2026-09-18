@@ -7,7 +7,6 @@ import {
   ShoppingCart,
   Zap,
 } from "lucide-react";
-
 import { useEffect, useState } from "react";
 import {
   Link,
@@ -296,11 +295,25 @@ export default function HomePage() {
                       key={product.id}
                       className="overflow-hidden rounded-xl bg-slate-800 transition hover:scale-105"
                     >
-                      <div className="flex h-44 items-center justify-center bg-slate-700">
-                        <Monitor
-                          size={80}
-                          className="text-cyan-400"
-                        />
+                      <div className="relative flex h-44 items-center justify-center overflow-hidden bg-slate-800">
+                        {product.imageUrl ? (
+                          <img
+                            src={product.imageUrl}
+                            alt={product.name}
+                            className="h-full w-full object-contain"
+                          />
+                        ) : (
+                          <Monitor
+                            size={80}
+                            className="text-cyan-400"
+                          />
+                        )}
+
+                        {product.category && (
+                          <span className="absolute left-3 top-3 rounded-full bg-slate-950/80 px-3 py-1 text-xs font-bold text-cyan-300">
+                            {product.category}
+                          </span>
+                        )}
                       </div>
 
                       <div className="p-4">

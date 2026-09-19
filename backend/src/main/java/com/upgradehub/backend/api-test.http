@@ -1,13 +1,5 @@
-POST http://localhost:8080/admin/products
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuZXd1c2VyQHRlc3QuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzg5ODAyMzIwLCJleHAiOjE3ODk4MDU5MjB9.cFELWMIY413MyIeHtG3QLQt5J6XCawTXRhBG-RWjmnw
-Content-Type: application/json
+@baseUrl = https://emptyplace.duckdns.org
+@adminToken = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuZXd1c2VyQHRlc3QuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzg5ODA0OTAzLCJleHAiOjE3ODk4MDg1MDN9.kGT2FDkOFwHKugoC27oNATntJCop1iIQBb6eP0haI7s
 
-{
-  "name": "RTX 5080",
-  "brand": "NVIDIA",
-  "category": "GPU",
-  "price": 1600000,
-  "stock": 5,
-  "performanceScore": 95,
-  "imageUrl": "/images/products/gpu/rtx-5080.webp"
-}
+PUT {{baseUrl}}/admin/products/68/active
+Authorization: Bearer {{adminToken}}

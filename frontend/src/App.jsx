@@ -20,6 +20,15 @@ import CheckoutPage from "./pages/CheckoutPage.jsx";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage.jsx";
 import PaymentFailPage from "./pages/PaymentFailPage.jsx";
 
+import AdminRoute from "./components/AdminRoute.jsx";
+
+import AdminLayout from "./pages/admin/AdminLayout.jsx";
+
+import AdminDashboardPage from "./pages/admin/AdminDashboardPage.jsx";
+
+import AdminProductsPage from "./pages/admin/AdminProductsPage.jsx";
+
+import AdminUsersPage from "./pages/admin/AdminUsersPage.jsx";
 function App() {
   return (
     <Routes>
@@ -147,6 +156,35 @@ function App() {
     path="/checkout"
     element={<CheckoutPage />}
   />
+  <Route
+  path="/admin"
+  element={
+    <AdminRoute>
+      <AdminLayout />
+    </AdminRoute>
+  }
+>
+  <Route
+    index
+    element={
+      <AdminDashboardPage />
+    }
+  />
+
+  <Route
+    path="products"
+    element={
+      <AdminProductsPage />
+    }
+  />
+
+  <Route
+    path="users"
+    element={
+      <AdminUsersPage />
+    }
+  />
+</Route>
 </Routes>
     
   );

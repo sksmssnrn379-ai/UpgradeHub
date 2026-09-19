@@ -74,6 +74,9 @@ public class AuthService {
         String token =
                 jwtUtil.createToken(user.getEmail(),user.getRole());
 
-        return new LoginResponse(token);
+        return new LoginResponse(
+        token,
+        user.getRole().name()
+        );
     }
 }

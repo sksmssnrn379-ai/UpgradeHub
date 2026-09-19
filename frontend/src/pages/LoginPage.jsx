@@ -47,6 +47,10 @@ function LoginPage() {
         "token",
         response.data.token
       );
+      localStorage.setItem(
+        "role",
+        response.data.role
+      );
 
       navigate(destination, {
         replace: true,

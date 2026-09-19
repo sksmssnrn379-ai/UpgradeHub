@@ -623,7 +623,7 @@ function ProductDetailPage() {
 
 <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
   <section className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
-    <div className="relative flex min-h-80 items-center justify-center overflow-hidden bg-slate-800">
+    <div className="relative flex h-96 items-center justify-center overflow-hidden bg-slate-800">
       {product.imageUrl ? (
           <img
             src={product.imageUrl}

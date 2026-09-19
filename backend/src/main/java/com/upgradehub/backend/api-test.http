@@ -1,2 +1,13 @@
-POST https://emptyplace.duckdns.org/admin/performance-scores/recalculate
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuZXd1c2VyQHRlc3QuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzg5Mzc5NTE1LCJleHAiOjE3ODkzODMxMTV9.f16vmTWpnBO4YVMk8gaYhVAPHC7CO21gPqNRLeHzFHA
+POST http://localhost:8080/admin/products
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuZXd1c2VyQHRlc3QuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzg5ODAyMzIwLCJleHAiOjE3ODk4MDU5MjB9.cFELWMIY413MyIeHtG3QLQt5J6XCawTXRhBG-RWjmnw
+Content-Type: application/json
+
+{
+  "name": "RTX 5080",
+  "brand": "NVIDIA",
+  "category": "GPU",
+  "price": 1600000,
+  "stock": 5,
+  "performanceScore": 95,
+  "imageUrl": "/images/products/gpu/rtx-5080.webp"
+}

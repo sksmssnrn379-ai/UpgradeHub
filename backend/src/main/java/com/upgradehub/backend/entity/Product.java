@@ -44,4 +44,10 @@ public class Product {
         length = 500
     )
     private String imageUrl;
+
+    @Column(
+        nullable = false
+    )
+    @Builder.Default
+    private Boolean active = true;
 }

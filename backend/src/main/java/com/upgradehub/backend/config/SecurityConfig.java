@@ -65,7 +65,7 @@ public class SecurityConfig {
                         )
                         .permitAll()
 
-                        // 상품 목록 및 상품 상세 조회
+                        // 공개 상품 조회
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/products",
@@ -74,7 +74,13 @@ public class SecurityConfig {
                         )
                         .permitAll()
 
-                        // 관리자 상품 등록
+                        // 관리자 전용 API 전체
+                        .requestMatchers(
+                                "/admin/**"
+                        )
+                        .hasRole("ADMIN")
+
+                        // 기존 관리자 상품 등록
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/products",
@@ -82,7 +88,7 @@ public class SecurityConfig {
                         )
                         .hasRole("ADMIN")
 
-                        // 관리자 상품 수정
+                        // 기존 관리자 상품 수정
                         .requestMatchers(
                                 HttpMethod.PUT,
                                 "/products/{id}",
@@ -90,7 +96,7 @@ public class SecurityConfig {
                         )
                         .hasRole("ADMIN")
 
-                        // 관리자 상품 삭제
+                        // 기존 관리자 상품 삭제
                         .requestMatchers(
                                 HttpMethod.DELETE,
                                 "/products/{id}"
@@ -105,7 +111,6 @@ public class SecurityConfig {
                                 "/mypc/{id}"
                         )
                         .authenticated()
-                                                
 
                         // MY PC 등록
                         .requestMatchers(
@@ -180,49 +185,51 @@ public class SecurityConfig {
                         )
                         .authenticated()
 
+                        // 결제 준비 및 승인
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/payments/prepare",
+                                "/payments/confirm"
+                        )
+                        .authenticated()
+
                         // AI 구매 추천
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/ai/recommend"
                         )
                         .authenticated()
-                        
+
+                        // 관리자 성능 점수 재계산
                         .requestMatchers(
-                        HttpMethod.POST,
-                        "/admin/performance-scores/recalculate"
+                                HttpMethod.POST,
+                                "/admin/performance-scores/recalculate"
                         )
                         .hasRole("ADMIN")
-                        
-                        .requestMatchers(
-                        HttpMethod.POST,
-                        "/payments/prepare",
-                        "/payments/confirm"
-                        )
-                        .authenticated()
-                        
+
                         // 나머지 요청
                         .anyRequest()
                         .permitAll()
                 )
 
-                .exceptionHandling(exception ->
-                        exception
-                                .authenticationEntryPoint(
-                                        new HttpStatusEntryPoint(
-                                                HttpStatus.UNAUTHORIZED
-                                        )
-                                )
-                                .accessDeniedHandler(
-                                        (
-                                                request,
-                                                response,
-                                                ex
-                                        ) -> response.sendError(
-                                                HttpStatus.FORBIDDEN.value(),
-                                                "접근 권한이 없습니다."
-                                        )
-                                )
+                .exceptionHandling(ex ->
+        ex
+                .authenticationEntryPoint(
+                        new HttpStatusEntryPoint(
+                                HttpStatus.UNAUTHORIZED
+                        )
                 )
+                .accessDeniedHandler(
+                        (
+                                request,
+                                response,
+                                accessDeniedException
+                        ) -> response.sendError(
+                                HttpStatus.FORBIDDEN.value(),
+                                "접근 권한이 없습니다."
+                        )
+                )
+)
 
                 .addFilterBefore(
                         jwtAuthenticationFilter,
@@ -278,8 +285,13 @@ public class SecurityConfig {
                 )
         );
 
-        configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
+        configuration.setAllowCredentials(
+                true
+        );
+
+        configuration.setMaxAge(
+                3600L
+        );
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();

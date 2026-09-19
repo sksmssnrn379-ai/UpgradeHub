@@ -22,7 +22,6 @@ import {
   useEffect,
   useState,
 } from "react";
-import ProductSpecSection from "../components/ProductSpecSection.jsx";
 import {
   Link,
   useLocation,
@@ -614,16 +613,9 @@ function ProductDetailPage() {
           상품 목록으로 돌아가기
         </button>
 
-        <section className="lg:col-span-2">
-  <ProductSpecSection
-    spec={spec}
-    loading={specLoading}
-  />
-</section>
-
-<div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-  <section className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
-    <div className="relative flex h-96 items-center justify-center overflow-hidden bg-slate-800">
+<div className="grid items-start gap-6 lg:grid-cols-[500px_1fr]">
+  <section className="self-start overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
+    <div className="flex h-[500px] items-center justify-center bg-slate-800 p-8">
       {product.imageUrl ? (
           <img
             src={product.imageUrl}
@@ -648,7 +640,7 @@ function ProductDetailPage() {
     </div>
   </section>
 
-      <section className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
+      <section className="self-start overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
             <div className="p-7">
               <p className="text-sm font-bold tracking-wider text-cyan-400">
                 {product.brand}
@@ -957,7 +949,7 @@ function ProductDetailPage() {
               )}
             </div>
           </section>
-
+          </div>
           <section className="rounded-2xl border border-slate-800 bg-slate-900 p-7">
             <div className="mb-6">
               <p className="text-sm font-bold tracking-widest text-cyan-400">
@@ -992,7 +984,7 @@ function ProductDetailPage() {
                 </p>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="grid gap-3 md:grid-cols-2">
                 {registeredSpecs.map(
                   (definition) => (
                     <div
@@ -1047,7 +1039,7 @@ function ProductDetailPage() {
               다른 상품 둘러보기
             </button>
           </section>
-        </div>
+        
       </main>
       </div>
   );

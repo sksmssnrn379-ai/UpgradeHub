@@ -619,51 +619,6 @@ function ProductDetailPage() {
     spec={spec}
     loading={specLoading}
   />
-
-  <div className="mt-6 grid gap-4 md:grid-cols-2">
-    <div className="rounded-2xl border border-green-500/30 bg-green-500/10 p-6">
-      <p className="text-sm font-bold text-green-400">
-        호환성 확인 안내
-      </p>
-
-      <p className="mt-2 text-sm leading-6 text-slate-400">
-        MY PC와 비교하면 현재 구성에
-        장착 가능한지와 업그레이드 효과를
-        확인할 수 있습니다.
-      </p>
-
-      <button
-        type="button"
-        onClick={moveToComparison}
-        className="mt-5 w-full rounded-xl bg-green-500 py-3 font-bold text-slate-950 transition hover:bg-green-400"
-      >
-        호환성 및 성능 비교
-      </button>
-    </div>
-
-    <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-      <p className="font-bold">
-        다른 상품도 확인해 보세요
-      </p>
-
-      <p className="mt-2 text-sm leading-6 text-slate-400">
-        같은 카테고리의 다른 상품과
-        가격 및 성능을 비교할 수 있습니다.
-      </p>
-
-      <button
-        type="button"
-        onClick={() => {
-          navigate(
-            productsReturnPath
-          );
-        }}
-        className="mt-5 w-full rounded-xl border border-slate-700 py-3 font-bold text-slate-300 transition hover:border-cyan-500 hover:text-cyan-400"
-      >
-        다른 상품 둘러보기
-      </button>
-    </div>
-  </div>
 </section>
 
 <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">

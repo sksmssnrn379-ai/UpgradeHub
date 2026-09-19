@@ -22,7 +22,7 @@ import {
   useEffect,
   useState,
 } from "react";
-
+import ProductSpecSection from "../components/ProductSpecSection.jsx";
 import {
   Link,
   useLocation,
@@ -32,39 +32,6 @@ import {
 
 import api from "../api/axios.js";
 
-const specDefinitions = [
-  {
-    key: "cpuSocket",
-    label: "CPU 소켓",
-  },
-  {
-    key: "memoryType",
-    label: "메모리 규격",
-  },
-  {
-    key: "powerConsumption",
-    label: "소비전력",
-    suffix: "W",
-  },
-  {
-    key: "recommendedPower",
-    label: "권장 파워",
-    suffix: "W",
-  },
-  {
-    key: "powerCapacity",
-    label: "파워 용량",
-    suffix: "W",
-  },
-  {
-    key: "gpuInterface",
-    label: "GPU 인터페이스",
-  },
-  {
-    key: "storageInterface",
-    label: "저장장치 인터페이스",
-  },
-];
 
 function ProductDetailPage() {
   const navigate = useNavigate();
@@ -76,9 +43,6 @@ function ProductDetailPage() {
     location.state?.from || "/products";
 
   const [product, setProduct] =
-    useState(null);
-
-  const [spec, setSpec] =
     useState(null);
 
   const [quantity, setQuantity] =
@@ -100,77 +64,110 @@ function ProductDetailPage() {
     useState(
       Boolean(localStorage.getItem("token"))
     );
+  const [spec, setSpec] =
+  useState(null);
+
+  const [specLoading, setSpecLoading] =
+    useState(true);
 
   useEffect(() => {
-    let active = true;
+  let active = true;
 
-    async function loadProduct() {
-      setLoading(true);
-      setMessage("");
-      setMessageType("");
+  async function loadProduct() {
+    setLoading(true);
+    setSpecLoading(true);
+    setProduct(null);
+    setSpec(null);
+    setQuantity(1);
+    setMessage("");
+    setMessageType("");
+
+    try {
+      const productResponse =
+        await api.get(
+          `/products/${id}`
+        );
+
+      if (!active) {
+        return;
+      }
+
+      setProduct(
+        productResponse.data
+      );
 
       try {
-        const productResponse =
+        const specResponse =
           await api.get(
-            "/products/" + id
+            `/products/${id}/spec`
           );
 
-        if (!active) {
-          return;
+        if (active) {
+          setSpec(
+            specResponse.data
+          );
+        }
+      } catch (specError) {
+        if (active) {
+          setSpec(null);
         }
 
-        setProduct(productResponse.data);
+        const status =
+          specError.response?.status;
 
-        try {
-          const specResponse =
-            await api.get(
-              "/products/" +
-              id +
-              "/spec"
-            );
-
-          if (active) {
-            setSpec(specResponse.data);
-          }
-        } catch {
-          if (active) {
-            setSpec(null);
-          }
+        if (
+          status !== 404 &&
+          status !== 500
+        ) {
+          console.error(
+            "상품 사양 조회 실패:",
+            specError.response?.data ||
+              specError
+          );
         }
-      } catch (error) {
-        if (!active) {
-          return;
-        }
-
-        const errorMessage =
-          error.response?.data?.message ||
-          "상품 정보를 불러오지 못했습니다.";
-
-        setProduct(null);
-        setMessage(errorMessage);
-        setMessageType("error");
       } finally {
         if (active) {
-          setLoading(false);
+          setSpecLoading(false);
         }
       }
+    } catch (error) {
+      if (!active) {
+        return;
+      }
+
+      const errorMessage =
+        error.response?.data?.message ||
+        "상품 정보를 불러오지 못했습니다.";
+
+      setProduct(null);
+      setSpec(null);
+      setMessage(errorMessage);
+      setMessageType("error");
+      setSpecLoading(false);
+    } finally {
+      if (active) {
+        setLoading(false);
+      }
     }
+  }
 
-    loadProduct();
+  loadProduct();
 
-    return () => {
-      active = false;
-    };
-  }, [id]);
+  return () => {
+    active = false;
+  };
+}, [id]);
 
   function handleLogout() {
-    localStorage.removeItem("token");
-    setIsLoggedIn(false);
+  localStorage.removeItem("token");
+  localStorage.removeItem("role");
 
-    navigate("/home", {
-      replace: true,
-    });
-  }
+  setIsLoggedIn(false);
+
+  navigate("/home", {
+    replace: true,
+  });
+}
 
   function decreaseQuantity() {
     setQuantity((currentQuantity) => {
@@ -336,41 +333,6 @@ function ProductDetailPage() {
     );
   }
 
-  function renderSpecValue(
-    value,
-    suffix
-  ) {
-    if (
-      value === null ||
-      value === undefined ||
-      value === ""
-    ) {
-      return "정보 없음";
-    }
-
-    return String(value) + (suffix || "");
-  }
-  function getBenchmarkTypeLabel(
-    benchmarkType
-  ) {
-    const labels = {
-      CPU_MULTI_CORE: "CPU 멀티코어",
-      CPU_SINGLE_CORE: "CPU 싱글코어",
-      CPU_MARK: "CPU 종합 성능",
-      GPU_RELATIVE_PERFORMANCE:
-        "GPU 상대 성능",
-      GPU_GAMING_1440P:
-        "1440p 게이밍 성능",
-      GPU_GAMING_4K:
-        "4K 게이밍 성능",
-    };
-
-    return (
-      labels[benchmarkType] ||
-      benchmarkType ||
-      "정보 없음"
-    );
-  }
 
   const PRODUCT_ICONS = {
     CPU: Cpu,
@@ -406,6 +368,32 @@ function ProductDetailPage() {
       "일"
     );
   }
+  function getBenchmarkTypeLabel(type) {
+  switch (type) {
+    case "PASSMARK":
+      return "PassMark";
+
+    case "CINEBENCH":
+      return "Cinebench";
+
+    case "TIMESPY":
+      return "3DMark Time Spy";
+
+    default:
+      return type || "정보 없음";
+  }
+} 
+  function renderSpecValue(value, suffix = "") {
+  if (
+    value === null ||
+    value === undefined ||
+    value === ""
+  ) {
+    return "정보 없음";
+  }
+
+  return `${value}${suffix}`;
+}
 
   if (loading) {
     return (
@@ -474,24 +462,75 @@ function ProductDetailPage() {
   const ProductIcon =
     PRODUCT_ICONS[product.category] ||
     CircuitBoard;
-
-  const registeredSpecs =
-    specDefinitions.filter(
-      (definition) => {
-        if (!spec) {
-          return false;
-        }
-
-        const value =
-          spec[definition.key];
-
-        return (
-          value !== null &&
-          value !== undefined &&
-          value !== ""
-        );
-      }
-    );
+  
+    const registeredSpecs = spec
+  ? [
+      {
+        key: "manufacturer",
+        label: "제조사",
+      },
+      {
+        key: "modelName",
+        label: "모델명",
+      },
+      {
+        key: "socket",
+        label: "소켓",
+      },
+      {
+        key: "memoryType",
+        label: "메모리 타입",
+      },
+      {
+        key: "capacityGb",
+        label: "용량",
+        suffix: " GB",
+      },
+      {
+        key: "coreCount",
+        label: "코어 수",
+      },
+      {
+        key: "threadCount",
+        label: "스레드 수",
+      },
+      {
+        key: "baseClock",
+        label: "기본 클럭",
+        suffix: " GHz",
+      },
+      {
+        key: "boostClock",
+        label: "부스트 클럭",
+        suffix: " GHz",
+      },
+      {
+        key: "lengthMm",
+        label: "길이",
+        suffix: " mm",
+      },
+      {
+        key: "widthMm",
+        label: "가로",
+        suffix: " mm",
+      },
+      {
+        key: "heightMm",
+        label: "높이",
+        suffix: " mm",
+      },
+      {
+        key: "weightG",
+        label: "무게",
+        suffix: " g",
+      },
+    ].filter(
+      (item) =>
+        spec[item.key] !== null &&
+        spec[item.key] !== undefined &&
+        spec[item.key] !== ""
+    )
+  : [];
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
@@ -575,20 +614,57 @@ function ProductDetailPage() {
           상품 목록으로 돌아가기
         </button>
 
-        <section className="mb-8 overflow-hidden rounded-2xl border border-slate-800 bg-gradient-to-r from-slate-900 to-cyan-950 p-8">
-          <p className="mb-2 text-sm font-bold tracking-widest text-cyan-400">
-            PRODUCT DETAIL
-          </p>
+        <section className="lg:col-span-2">
+  <ProductSpecSection
+    spec={spec}
+    loading={specLoading}
+  />
 
-          <h1 className="text-4xl font-black md:text-5xl">
-            {product.name}
-          </h1>
+  <div className="mt-6 grid gap-4 md:grid-cols-2">
+    <div className="rounded-2xl border border-green-500/30 bg-green-500/10 p-6">
+      <p className="text-sm font-bold text-green-400">
+        호환성 확인 안내
+      </p>
 
-          <p className="mt-3 text-slate-300">
-            상품 정보와 상세 사양을 확인하고
-            MY PC와 비교해 보세요.
-          </p>
-        </section>
+      <p className="mt-2 text-sm leading-6 text-slate-400">
+        MY PC와 비교하면 현재 구성에
+        장착 가능한지와 업그레이드 효과를
+        확인할 수 있습니다.
+      </p>
+
+      <button
+        type="button"
+        onClick={moveToComparison}
+        className="mt-5 w-full rounded-xl bg-green-500 py-3 font-bold text-slate-950 transition hover:bg-green-400"
+      >
+        호환성 및 성능 비교
+      </button>
+    </div>
+
+    <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+      <p className="font-bold">
+        다른 상품도 확인해 보세요
+      </p>
+
+      <p className="mt-2 text-sm leading-6 text-slate-400">
+        같은 카테고리의 다른 상품과
+        가격 및 성능을 비교할 수 있습니다.
+      </p>
+
+      <button
+        type="button"
+        onClick={() => {
+          navigate(
+            productsReturnPath
+          );
+        }}
+        className="mt-5 w-full rounded-xl border border-slate-700 py-3 font-bold text-slate-300 transition hover:border-cyan-500 hover:text-cyan-400"
+      >
+        다른 상품 둘러보기
+      </button>
+    </div>
+  </div>
+</section>
 
 <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
   <section className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">

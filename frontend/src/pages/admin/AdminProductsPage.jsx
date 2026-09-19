@@ -7,6 +7,11 @@ import {
   Search,
   X,
 } from "lucide-react";
+import {
+  Ruler,
+} from "lucide-react";
+
+import ProductSpecModal from "../../components/ProductSpecModal.jsx";
 
 import {
   useEffect,
@@ -58,6 +63,10 @@ function AdminProductsPage() {
 
   const [imageError, setImageError] =
     useState(false);
+  const [
+  specProduct,
+  setSpecProduct,
+  ] = useState(null);
 
   useEffect(() => {
     loadProducts();
@@ -451,6 +460,21 @@ function AdminProductsPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
+      {specProduct && (
+  <ProductSpecModal
+    product={specProduct}
+    onClose={() => {
+      setSpecProduct(null);
+    }}
+    onSaved={() => {
+      setMessage(
+        "상품 상세 규격이 저장되었습니다."
+      );
+
+      setMessageType("success");
+    }}
+  />
+)}
       <section className="mb-7">
         <p className="text-sm font-bold tracking-widest text-cyan-400">
           PRODUCT MANAGEMENT
@@ -720,7 +744,16 @@ function AdminProductsPage() {
 
                       수정
                     </button>
-
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSpecProduct(product);
+                      }}
+                      className="flex items-center gap-2 rounded-xl border border-cyan-500/30 px-4 py-2.5 font-bold text-cyan-300 transition hover:bg-cyan-500/10"
+                    >
+                      <Ruler size={16} />
+                      상세 규격
+                    </button>  
                     <button
                       type="button"
                       disabled={isChanging}

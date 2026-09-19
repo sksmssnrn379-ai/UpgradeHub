@@ -760,7 +760,7 @@ function ProductDetailPage() {
                           벤치마크 유형
                         </div>
 
-                        <p className="mt-2 font-bold text-slate-200">
+                        <p className="mt-2 break-words text-sm font-bold text-slate-200">
                           {getBenchmarkTypeLabel(
                             product.benchmarkType
                           )}

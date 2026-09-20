@@ -7,31 +7,39 @@ import {
 import HomePage from "./pages/HomePage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
+
 import ProductsPage from "./pages/ProductsPage.jsx";
 import ProductDetailPage from "./pages/ProductDetailPage.jsx";
+
 import CartPage from "./pages/CartPage.jsx";
 import MyPcPage from "./pages/MyPcPage.jsx";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import ComparePage from "./pages/ComparePage.jsx";
 import AdvisorPage from "./pages/AdvisorPage.jsx";
 import PurchasedPartsPage from "./pages/PurchasedPartsPage.jsx";
+
+import OrdersPage from "./pages/OrdersPage.jsx";
 
 import CheckoutPage from "./pages/CheckoutPage.jsx";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage.jsx";
 import PaymentFailPage from "./pages/PaymentFailPage.jsx";
 
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import AdminRoute from "./components/AdminRoute.jsx";
 
 import AdminLayout from "./pages/admin/AdminLayout.jsx";
-
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage.jsx";
-
 import AdminProductsPage from "./pages/admin/AdminProductsPage.jsx";
-
 import AdminUsersPage from "./pages/admin/AdminUsersPage.jsx";
+
+
 function App() {
   return (
     <Routes>
+
+      {/* =========================
+          일반 페이지
+      ========================= */}
+
       <Route
         path="/"
         element={<Navigate to="/home" replace />}
@@ -62,25 +70,11 @@ function App() {
         element={<ProductDetailPage />}
       />
 
-      <Route
-        path="/cart"
-        element={<CartPage />}
-      />
 
-      <Route
-        path="/mypc"
-        element={<MyPcPage />}
-      />
+      {/* =========================
+          로그인 필요 페이지
+      ========================= */}
 
-      <Route
-        path="*"
-        element={<Navigate to="/home" replace />}
-      />
-
-      <Route
-        path="/cart"
-        element={<CartPage />}
-      />
       <Route
         path="/cart"
         element={
@@ -89,6 +83,7 @@ function App() {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/mypc"
         element={
@@ -97,6 +92,7 @@ function App() {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/compare/:id"
         element={
@@ -104,7 +100,8 @@ function App() {
             <ComparePage />
           </ProtectedRoute>
         }
-        />
+      />
+
       <Route
         path="/advisor"
         element={
@@ -113,6 +110,7 @@ function App() {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/mypc/purchased-parts"
         element={
@@ -121,6 +119,18 @@ function App() {
           </ProtectedRoute>
         }
       />
+
+      {/* 주문 내역 */}
+      <Route
+        path="/orders"
+        element={
+          <ProtectedRoute>
+            <OrdersPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 결제 */}
       <Route
         path="/checkout"
         element={
@@ -144,49 +154,48 @@ function App() {
         element={<PaymentFailPage />}
       />
 
-      
-  <Route
-    path="*"
-    element={
-      <Navigate to="/home" />
-    }
-  />
 
-  <Route
-    path="/checkout"
-    element={<CheckoutPage />}
-  />
-  <Route
-  path="/admin"
-  element={
-    <AdminRoute>
-      <AdminLayout />
-    </AdminRoute>
-  }
->
-  <Route
-    index
-    element={
-      <AdminDashboardPage />
-    }
-  />
+      {/* =========================
+          관리자
+      ========================= */}
 
-  <Route
-    path="products"
-    element={
-      <AdminProductsPage />
-    }
-  />
+      <Route
+        path="/admin"
+        element={
+          <AdminRoute>
+            <AdminLayout />
+          </AdminRoute>
+        }
+      >
+        <Route
+          index
+          element={<AdminDashboardPage />}
+        />
 
-  <Route
-    path="users"
-    element={
-      <AdminUsersPage />
-    }
-  />
-</Route>
-</Routes>
-    
+        <Route
+          path="products"
+          element={<AdminProductsPage />}
+        />
+
+        <Route
+          path="users"
+          element={<AdminUsersPage />}
+        />
+      </Route>
+
+
+      {/* =========================
+          존재하지 않는 주소
+      ========================= */}
+
+      <Route
+        path="*"
+        element={
+          <Navigate to="/home" replace />
+        }
+      />
+
+    </Routes>
   );
 }
 

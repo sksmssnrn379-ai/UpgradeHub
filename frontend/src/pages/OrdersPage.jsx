@@ -139,8 +139,8 @@ function OrdersPage() {
     useState("ALL");
 
   useEffect(() => {
-    loadOrders();
-  }, []);
+  console.log("OrdersPage 진입");
+}, []);
 
   async function loadOrders() {
     const token =

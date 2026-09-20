@@ -1,7 +1,10 @@
-import { Navigate } from "react-router-dom";
-import { Route } from "react-router-dom";
-import { Routes } from "react-router-dom";
+import {
+  Navigate,
+  Route,
+  Routes,
+} from "react-router-dom";
 
+import HomePage from "./pages/HomePage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import ProductsPage from "./pages/ProductsPage.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
@@ -14,15 +17,14 @@ import OrdersPage from "./pages/OrdersPage.jsx";
 function App() {
   return (
     <Routes>
-
-      <Route
-  path="/orders"
-  element={<OrdersPage />}
-/>
-
       <Route
         path="/"
-        element={<Navigate to="/login" replace />}
+        element={<Navigate to="/home" replace />}
+      />
+
+      <Route
+        path="/home"
+        element={<HomePage />}
       />
 
       <Route
@@ -39,34 +41,31 @@ function App() {
         path="/products"
         element={<ProductsPage />}
       />
-      
+
       <Route
-        path="/*"
-        element={<Navigate to="/login" replace />}
+        path="/orders"
+        element={<OrdersPage />}
       />
+
       <Route
         path="/checkout"
-        element={
-          <ProtectedRoute>
-            <CheckoutPage />
-          </ProtectedRoute>
-        }
+        element={<CheckoutPage />}
       />
 
       <Route
         path="/payment/success"
-        element={
-          <ProtectedRoute>
-            <PaymentSuccessPage />
-          </ProtectedRoute>
-        }
+        element={<PaymentSuccessPage />}
       />
 
       <Route
         path="/payment/fail"
         element={<PaymentFailPage />}
       />
-      
+
+      <Route
+        path="*"
+        element={<Navigate to="/home" replace />}
+      />
     </Routes>
   );
 }

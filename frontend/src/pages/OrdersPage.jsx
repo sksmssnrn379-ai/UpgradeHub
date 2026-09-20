@@ -137,12 +137,11 @@ function OrdersPage() {
 
   const [statusFilter, setStatusFilter] =
     useState("ALL");
-
+  
   useEffect(() => {
-  console.log("OrdersPage 진입");
-}, []);
+  let active = true;
 
-  async function loadOrders() {
+  async function fetchOrders() {
     const token =
       localStorage.getItem("token");
 
@@ -164,6 +163,15 @@ function OrdersPage() {
       const response =
         await api.get("/orders");
 
+      console.log(
+        "주문 목록 응답:",
+        response.data
+      );
+
+      if (!active) {
+        return;
+      }
+
       const orderData =
         Array.isArray(response.data)
           ? response.data
@@ -174,22 +182,27 @@ function OrdersPage() {
       setExpandedOrderIds(
         new Set(
           orderData.map(
-            (order) =>
-              order.orderId
+            (order) => order.orderId
           )
         )
       );
     } catch (error) {
+      if (!active) {
+        return;
+      }
+
+      console.error(
+        "주문 목록 조회 실패:",
+        error.response?.status,
+        error.response?.data,
+        error
+      );
+
       if (
         error.response?.status === 401
       ) {
-        localStorage.removeItem(
-          "token"
-        );
-
-        localStorage.removeItem(
-          "role"
-        );
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
 
         navigate("/login", {
           state: {
@@ -207,9 +220,109 @@ function OrdersPage() {
           "주문 내역을 불러오지 못했습니다."
       );
     } finally {
-      setLoading(false);
+      if (active) {
+        setLoading(false);
+      }
     }
   }
+
+  fetchOrders();
+
+  return () => {
+    active = false;
+  };
+}, [navigate]);
+
+  async function loadOrders() {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    navigate("/login", {
+      state: {
+        from: "/orders",
+      },
+      replace: true,
+    });
+
+    return;
+  }
+
+  setLoading(true);
+  setMessage("");
+
+  try {
+    console.log("주문 목록 요청 시작");
+
+    const response = await api.get("/orders", {
+      timeout: 10000,
+    });
+
+    console.log(
+      "주문 목록 응답:",
+      response.status,
+      response.data
+    );
+
+    const orderData =
+      Array.isArray(response.data)
+        ? response.data
+        : [];
+
+    setOrders(orderData);
+
+    setExpandedOrderIds(
+      new Set(
+        orderData.map(
+          (order) => order.orderId
+        )
+      )
+    );
+  } catch (error) {
+    console.error(
+      "주문 목록 조회 실패:",
+      error
+    );
+
+    console.error(
+      "status:",
+      error.response?.status
+    );
+
+    console.error(
+      "data:",
+      error.response?.data
+    );
+
+    console.error(
+      "message:",
+      error.message
+    );
+
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+
+      navigate("/login", {
+        state: {
+          from: "/orders",
+        },
+        replace: true,
+      });
+
+      return;
+    }
+
+    setMessage(
+      error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "주문 내역을 불러오지 못했습니다."
+    );
+  } finally {
+    console.log("주문 목록 로딩 종료");
+    setLoading(false);
+  }
+}
 
   function toggleOrder(orderId) {
     setExpandedOrderIds(

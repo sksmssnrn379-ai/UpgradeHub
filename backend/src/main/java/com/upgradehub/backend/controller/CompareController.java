@@ -1,4 +1,3 @@
-```java
 package com.upgradehub.backend.controller;
 
 import com.upgradehub.backend.dto.CompareResponse;

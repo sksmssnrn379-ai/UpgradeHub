@@ -46,7 +46,7 @@ public class AiRecommendationService {
                 compareService.compareLoginUser(
                         email,
                         targetProduct.getId(),
-                        category
+                        targetProduct.getCategory()
                 );
 
         CompatibilityResponse compatibilityResponse =

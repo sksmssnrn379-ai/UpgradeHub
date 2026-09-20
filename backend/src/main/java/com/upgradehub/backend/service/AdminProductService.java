@@ -42,25 +42,50 @@ public class AdminProductService {
     public AdminProductResponse createProduct(
             AdminProductRequest request
     ) {
-        Product product = Product.builder()
-                .name(request.getName())
-                .brand(request.getBrand())
-                .category(
-                        request.getCategory()
-                                .trim()
-                                .toUpperCase()
-                )
-                .price(request.getPrice())
-                .stock(request.getStock())
-                .performanceScore(
-                        request.getPerformanceScore()
-                )
-                .imageUrl(request.getImageUrl())
-                .active(true)
-                .build();
+        Product product =
+                Product.builder()
+                        .name(
+                                request.getName()
+                        )
+                        .brand(
+                                request.getBrand()
+                        )
+                        .category(
+                                request.getCategory()
+                                        .trim()
+                                        .toUpperCase()
+                        )
+                        .price(
+                                request.getPrice()
+                        )
+                        .stock(
+                                request.getStock()
+                        )
+                        .imageUrl(
+                                request.getImageUrl()
+                        )
+                        .benchmarkScore(
+                                request.getBenchmarkScore()
+                        )
+                        .benchmarkType(
+                                request.getBenchmarkType()
+                        )
+                        .benchmarkSource(
+                                request.getBenchmarkSource()
+                        )
+                        .benchmarkUpdatedAt(
+                                request.getBenchmarkUpdatedAt()
+                        )
+                        .active(true)
+                        .build();
+
+        Product savedProduct =
+                productRepository.save(
+                        product
+                );
 
         return toResponse(
-                productRepository.save(product)
+                savedProduct
         );
     }
 
@@ -93,16 +118,33 @@ public class AdminProductService {
                 request.getStock()
         );
 
-        product.setPerformanceScore(
-                request.getPerformanceScore()
-        );
-
         product.setImageUrl(
                 request.getImageUrl()
         );
 
+        product.setBenchmarkScore(
+                request.getBenchmarkScore()
+        );
+
+        product.setBenchmarkType(
+                request.getBenchmarkType()
+        );
+
+        product.setBenchmarkSource(
+                request.getBenchmarkSource()
+        );
+
+        product.setBenchmarkUpdatedAt(
+                request.getBenchmarkUpdatedAt()
+        );
+
+        Product savedProduct =
+                productRepository.save(
+                        product
+                );
+
         return toResponse(
-                productRepository.save(product)
+                savedProduct
         );
     }
 
@@ -118,8 +160,13 @@ public class AdminProductService {
                 )
         );
 
+        Product savedProduct =
+                productRepository.save(
+                        product
+                );
+
         return toResponse(
-                productRepository.save(product)
+                savedProduct
         );
     }
 
@@ -136,35 +183,49 @@ public class AdminProductService {
     }
 
     private AdminProductResponse toResponse(
-        Product product
-) {
-    return AdminProductResponse
-            .builder()
-            .id(product.getId())
-            .name(product.getName())
-            .brand(product.getBrand())
-            .category(product.getCategory())
-            .price(product.getPrice())
-            .stock(product.getStock())
-            .performanceScore(
-                    product.getPerformanceScore()
-            )
-            .benchmarkScore(
-                    product.getBenchmarkScore()
-            )
-            .benchmarkType(
-                    product.getBenchmarkType()
-            )
-            .benchmarkSource(
-                    product.getBenchmarkSource()
-            )
-            .benchmarkUpdatedAt(
-                    product.getBenchmarkUpdatedAt()
-            )
-            .imageUrl(
-                    product.getImageUrl()
-            )
-            .active(product.getActive())
-            .build();
-}
+            Product product
+    ) {
+        return AdminProductResponse
+                .builder()
+                .id(
+                        product.getId()
+                )
+                .name(
+                        product.getName()
+                )
+                .brand(
+                        product.getBrand()
+                )
+                .category(
+                        product.getCategory()
+                )
+                .price(
+                        product.getPrice()
+                )
+                .stock(
+                        product.getStock()
+                )
+                .performanceScore(
+                        product.getPerformanceScore()
+                )
+                .benchmarkScore(
+                        product.getBenchmarkScore()
+                )
+                .benchmarkType(
+                        product.getBenchmarkType()
+                )
+                .benchmarkSource(
+                        product.getBenchmarkSource()
+                )
+                .benchmarkUpdatedAt(
+                        product.getBenchmarkUpdatedAt()
+                )
+                .imageUrl(
+                        product.getImageUrl()
+                )
+                .active(
+                        product.getActive()
+                )
+                .build();
+    }
 }

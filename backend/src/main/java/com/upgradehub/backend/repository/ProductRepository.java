@@ -21,7 +21,11 @@ public interface ProductRepository
     List<Product> findByCategoryIgnoreCase(
             String category
     );
-
+    List<Product>
+findByCategoryIgnoreCaseAndBenchmarkTypeIgnoreCase(
+        String category,
+        String benchmarkType
+);
     // 상품명과 카테고리 동시 검색
     List<Product>
     findByNameContainingIgnoreCaseAndCategoryIgnoreCase(

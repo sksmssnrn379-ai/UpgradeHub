@@ -14,6 +14,12 @@ import OrdersPage from "./pages/OrdersPage.jsx";
 function App() {
   return (
     <Routes>
+
+      <Route
+  path="/orders"
+  element={<OrdersPage />}
+/>
+
       <Route
         path="/"
         element={<Navigate to="/login" replace />}
@@ -33,7 +39,7 @@ function App() {
         path="/products"
         element={<ProductsPage />}
       />
-
+      
       <Route
         path="/*"
         element={<Navigate to="/login" replace />}
@@ -60,10 +66,7 @@ function App() {
         path="/payment/fail"
         element={<PaymentFailPage />}
       />
-      <Route
-  path="/orders"
-  element={<OrdersPage />}
-/>
+      
     </Routes>
   );
 }

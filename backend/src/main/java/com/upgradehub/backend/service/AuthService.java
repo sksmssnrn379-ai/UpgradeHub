@@ -11,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.upgradehub.backend.dto.SignupResponse;
 import com.upgradehub.backend.entity.Role;
-
+import com.upgradehub.backend.entity.UserStatus;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -70,7 +70,14 @@ public class AuthService {
                     "비밀번호가 일치하지 않습니다."
             );
         }
-
+        if (
+        user.getStatus()
+                == UserStatus.BLOCKED
+) {
+    throw new RuntimeException(
+            "차단된 계정입니다. 관리자에게 문의해 주세요."
+    );
+}
         String token =
                 jwtUtil.createToken(user.getEmail(),user.getRole());
 

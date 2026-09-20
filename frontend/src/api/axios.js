@@ -24,4 +24,27 @@ api.interceptors.request.use(
   }
 );
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status =
+      error.response?.status;
+
+    if (
+      status === 401 ||
+      status === 403
+    ) {
+      localStorage.removeItem(
+        "token"
+      );
+
+      localStorage.removeItem(
+        "role"
+      );
+    }
+
+    return Promise.reject(error);
+  }
+);
+
 export default api;

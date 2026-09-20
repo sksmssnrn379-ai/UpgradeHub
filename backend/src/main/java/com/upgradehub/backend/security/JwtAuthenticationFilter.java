@@ -14,12 +14,18 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
+import com.upgradehub.backend.entity.User;
+import com.upgradehub.backend.entity.UserStatus;
+import com.upgradehub.backend.repository.UserRepository;
+
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
+    
     private final JwtUtil jwtUtil;
+    private final UserRepository
+        userRepository;
 
     @Override
     protected void doFilterInternal(
@@ -33,7 +39,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (token != null && jwtUtil.isValidToken(token)) {
 
             String email = jwtUtil.getEmail(token);
-            String role = jwtUtil.getRole(token);
+            String role = user.getRole();
+           
+            User user = userRepository
+        .findByEmail(email)
+        .orElse(null);
+
+        if (
+        user == null ||
+        user.getStatus()
+                != UserStatus.ACTIVE
+) {
+    response.sendError(
+            HttpServletResponse
+                    .SC_FORBIDDEN,
+            "사용할 수 없는 계정입니다."
+    );
+
+    return;
+}
 
             String authorityName = role.startsWith("ROLE_")
                     ? role
@@ -53,6 +77,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .getContext()
                     .setAuthentication(authentication);
         }
+        
 
         filterChain.doFilter(request, response);
     }
@@ -70,4 +95,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         return null;
     }
+    
 }

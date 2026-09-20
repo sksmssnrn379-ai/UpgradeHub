@@ -85,38 +85,31 @@ function ComparePage() {
             }
           );
 
-        let comparisonRequest = null;
+const comparisonRequest =
+  api.get("/compare/me", {
+    params: {
+      targetId: Number(id),
+      category: targetProduct.category,
+    },
+  });
 
-        if (
-          targetProduct.category === "GPU"
-        ) {
-          comparisonRequest =
-            api.get("/compare/me", {
-              params: {
-                targetId: id,
-              },
-            });
-        }
+const compatibilityResponse =
+  await compatibilityRequest;
 
-        const compatibilityResponse =
-          await compatibilityRequest;
+if (active) {
+  setCompatibility(
+    compatibilityResponse.data
+  );
+}
 
-        if (active) {
-          setCompatibility(
-            compatibilityResponse.data
-          );
-        }
+const comparisonResponse =
+  await comparisonRequest;
 
-        if (comparisonRequest) {
-          const comparisonResponse =
-            await comparisonRequest;
-
-          if (active) {
-            setComparison(
-              comparisonResponse.data
-            );
-          }
-        }
+if (active) {
+  setComparison(
+    comparisonResponse.data
+  );
+}
       } catch (error) {
         if (!active) {
           return;
@@ -362,9 +355,9 @@ function ComparePage() {
               ) : (
                 <div className="mt-7 rounded-xl border border-dashed border-slate-700 bg-slate-950 p-8 text-center">
                   <p className="text-slate-400">
-                    현재 성능 비교는 GPU 상품을
-                    대상으로 제공됩니다.
-                  </p>
+  현재 MY PC에 등록된 부품과
+  선택한 상품의 성능을 비교할 수 있습니다.
+</p>
                 </div>
               )}
             </section>

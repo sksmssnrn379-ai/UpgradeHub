@@ -4,11 +4,13 @@ import com.upgradehub.backend.dto.AdminProductRequest;
 import com.upgradehub.backend.dto.AdminProductResponse;
 import com.upgradehub.backend.entity.Product;
 import com.upgradehub.backend.repository.ProductRepository;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +19,12 @@ public class AdminProductService {
 
     private final ProductRepository
             productRepository;
+
+    private final PerformanceScoreService
+            performanceScoreService;
+
+    private final EntityManager
+            entityManager;
 
     @Transactional(readOnly = true)
     public List<AdminProductResponse>
@@ -68,10 +76,14 @@ public class AdminProductService {
                                 request.getBenchmarkScore()
                         )
                         .benchmarkType(
-                                request.getBenchmarkType()
+                                normalizeNullableText(
+                                        request.getBenchmarkType()
+                                )
                         )
                         .benchmarkSource(
-                                request.getBenchmarkSource()
+                                normalizeNullableText(
+                                        request.getBenchmarkSource()
+                                )
                         )
                         .benchmarkUpdatedAt(
                                 request.getBenchmarkUpdatedAt()
@@ -80,12 +92,29 @@ public class AdminProductService {
                         .build();
 
         Product savedProduct =
-                productRepository.save(
-                        product
+                productRepository
+                        .saveAndFlush(product);
+
+        boolean hasBenchmark =
+                request.getBenchmarkScore() != null
+                        && request.getBenchmarkType() != null
+                        && !request.getBenchmarkType()
+                                .isBlank();
+
+        if (hasBenchmark) {
+            performanceScoreService
+                    .recalculateAll();
+        }
+
+        entityManager.clear();
+
+        Product updatedProduct =
+                findProduct(
+                        savedProduct.getId()
                 );
 
         return toResponse(
-                savedProduct
+                updatedProduct
         );
     }
 
@@ -95,6 +124,17 @@ public class AdminProductService {
     ) {
         Product product =
                 findProduct(productId);
+
+        Double previousBenchmarkScore =
+                product.getBenchmarkScore();
+
+        String previousBenchmarkType =
+                product.getBenchmarkType();
+
+        String normalizedBenchmarkType =
+                normalizeNullableText(
+                        request.getBenchmarkType()
+                );
 
         product.setName(
                 request.getName()
@@ -127,24 +167,45 @@ public class AdminProductService {
         );
 
         product.setBenchmarkType(
-                request.getBenchmarkType()
+                normalizedBenchmarkType
         );
 
         product.setBenchmarkSource(
-                request.getBenchmarkSource()
+                normalizeNullableText(
+                        request.getBenchmarkSource()
+                )
         );
 
         product.setBenchmarkUpdatedAt(
                 request.getBenchmarkUpdatedAt()
         );
 
-        Product savedProduct =
-                productRepository.save(
-                        product
-                );
+        boolean benchmarkChanged =
+                !Objects.equals(
+                        previousBenchmarkScore,
+                        request.getBenchmarkScore()
+                )
+                        || !Objects.equals(
+                                previousBenchmarkType,
+                                normalizedBenchmarkType
+                        );
+
+        productRepository.saveAndFlush(
+                product
+        );
+
+        if (benchmarkChanged) {
+            performanceScoreService
+                    .recalculateAll();
+        }
+
+        entityManager.clear();
+
+        Product updatedProduct =
+                findProduct(productId);
 
         return toResponse(
-                savedProduct
+                updatedProduct
         );
     }
 
@@ -180,6 +241,19 @@ public class AdminProductService {
                                 "상품을 찾을 수 없습니다."
                         )
                 );
+    }
+
+    private String normalizeNullableText(
+            String value
+    ) {
+        if (
+                value == null
+                        || value.isBlank()
+        ) {
+            return null;
+        }
+
+        return value.trim();
     }
 
     private AdminProductResponse toResponse(

@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 
 import {
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -84,9 +85,7 @@ function getOrderStatus(status) {
 
 function formatPrice(price) {
   return (
-    Number(
-      price || 0
-    ).toLocaleString("ko-KR") +
+    Number(price || 0).toLocaleString("ko-KR") +
     "원"
   );
 }
@@ -98,37 +97,25 @@ function formatOrderDate(value) {
 
   const date = new Date(value);
 
-  if (
-    Number.isNaN(
-      date.getTime()
-    )
-  ) {
+  if (Number.isNaN(date.getTime())) {
     return String(value);
   }
 
-  return new Intl.DateTimeFormat(
-    "ko-KR",
-    {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }
-  ).format(date);
+  return new Intl.DateTimeFormat("ko-KR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
 }
 
 function OrdersPage() {
   const navigate = useNavigate();
 
-  const [orders, setOrders] =
-    useState([]);
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [message, setMessage] =
-    useState("");
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");
 
   const [
     expandedOrderIds,
@@ -137,11 +124,17 @@ function OrdersPage() {
 
   const [statusFilter, setStatusFilter] =
     useState("ALL");
-  
-  useEffect(() => {
-  let active = true;
 
-  async function fetchOrders() {
+  /*
+   * 주문 목록 조회
+   *
+   * - 페이지 최초 진입
+   * - 새로고침 버튼
+   * - 다시 시도 버튼
+   *
+   * 모두 이 함수 하나를 사용한다.
+   */
+  const loadOrders = useCallback(async () => {
     const token =
       localStorage.getItem("token");
 
@@ -160,17 +153,17 @@ function OrdersPage() {
     setMessage("");
 
     try {
-      const response =
-        await api.get("/orders");
+      console.log("주문 목록 요청 시작");
+
+      const response = await api.get("/orders", {
+        timeout: 10000,
+      });
 
       console.log(
         "주문 목록 응답:",
+        response.status,
         response.data
       );
-
-      if (!active) {
-        return;
-      }
 
       const orderData =
         Array.isArray(response.data)
@@ -179,6 +172,10 @@ function OrdersPage() {
 
       setOrders(orderData);
 
+      /*
+       * 주문 목록을 불러오면
+       * 모든 주문을 기본적으로 펼친 상태로 설정
+       */
       setExpandedOrderIds(
         new Set(
           orderData.map(
@@ -187,20 +184,30 @@ function OrdersPage() {
         )
       );
     } catch (error) {
-      if (!active) {
-        return;
-      }
-
       console.error(
         "주문 목록 조회 실패:",
-        error.response?.status,
-        error.response?.data,
         error
       );
 
-      if (
-        error.response?.status === 401
-      ) {
+      console.error(
+        "status:",
+        error.response?.status
+      );
+
+      console.error(
+        "data:",
+        error.response?.data
+      );
+
+      console.error(
+        "message:",
+        error.message
+      );
+
+      /*
+       * 인증 만료
+       */
+      if (error.response?.status === 401) {
         localStorage.removeItem("token");
         localStorage.removeItem("role");
 
@@ -217,199 +224,85 @@ function OrdersPage() {
       setMessage(
         error.response?.data?.message ||
           error.response?.data?.error ||
+          error.message ||
           "주문 내역을 불러오지 못했습니다."
       );
     } finally {
-      if (active) {
-        setLoading(false);
-      }
+      setLoading(false);
     }
-  }
+  }, [navigate]);
 
-  fetchOrders();
-
-  return () => {
-    active = false;
-  };
-}, [navigate]);
-
-  async function loadOrders() {
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    navigate("/login", {
-      state: {
-        from: "/orders",
-      },
-      replace: true,
-    });
-
-    return;
-  }
-
-  setLoading(true);
-  setMessage("");
-
-  try {
-    console.log("주문 목록 요청 시작");
-
-    const response = await api.get("/orders", {
-      timeout: 10000,
-    });
-
-    console.log(
-      "주문 목록 응답:",
-      response.status,
-      response.data
-    );
-
-    const orderData =
-      Array.isArray(response.data)
-        ? response.data
-        : [];
-
-    setOrders(orderData);
-
-    setExpandedOrderIds(
-      new Set(
-        orderData.map(
-          (order) => order.orderId
-        )
-      )
-    );
-  } catch (error) {
-    console.error(
-      "주문 목록 조회 실패:",
-      error
-    );
-
-    console.error(
-      "status:",
-      error.response?.status
-    );
-
-    console.error(
-      "data:",
-      error.response?.data
-    );
-
-    console.error(
-      "message:",
-      error.message
-    );
-
-    if (error.response?.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("role");
-
-      navigate("/login", {
-        state: {
-          from: "/orders",
-        },
-        replace: true,
-      });
-
-      return;
-    }
-
-    setMessage(
-      error.response?.data?.message ||
-        error.response?.data?.error ||
-        error.message ||
-        "주문 내역을 불러오지 못했습니다."
-    );
-  } finally {
-    console.log("주문 목록 로딩 종료");
-    setLoading(false);
-  }
-}
+  /*
+   * 페이지 최초 진입 시
+   * 주문 목록을 한 번만 조회
+   */
+  useEffect(() => {
+    loadOrders();
+  }, [loadOrders]);
 
   function toggleOrder(orderId) {
-    setExpandedOrderIds(
-      (current) => {
-        const next =
-          new Set(current);
+    setExpandedOrderIds((current) => {
+      const next = new Set(current);
 
-        if (next.has(orderId)) {
-          next.delete(orderId);
-        } else {
-          next.add(orderId);
-        }
-
-        return next;
+      if (next.has(orderId)) {
+        next.delete(orderId);
+      } else {
+        next.add(orderId);
       }
-    );
+
+      return next;
+    });
   }
 
   function handleLogout() {
-    localStorage.removeItem(
-      "token"
-    );
-
-    localStorage.removeItem(
-      "role"
-    );
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
 
     navigate("/home", {
       replace: true,
     });
   }
 
-  const filteredOrders =
-    useMemo(() => {
-      if (
-        statusFilter === "ALL"
-      ) {
-        return orders;
-      }
+  const filteredOrders = useMemo(() => {
+    if (statusFilter === "ALL") {
+      return orders;
+    }
 
-      return orders.filter(
-        (order) =>
-          order.status ===
-          statusFilter
-      );
-    }, [
-      orders,
-      statusFilter,
-    ]);
+    return orders.filter(
+      (order) =>
+        order.status === statusFilter
+    );
+  }, [orders, statusFilter]);
 
-  const paidOrderCount =
-    useMemo(() => {
-      return orders.filter(
+  const paidOrderCount = useMemo(() => {
+    return orders.filter(
+      (order) =>
+        order.status === "PAID" ||
+        order.status === "COMPLETED"
+    ).length;
+  }, [orders]);
+
+  const pendingOrderCount = useMemo(() => {
+    return orders.filter(
+      (order) =>
+        order.status === "PAYMENT_PENDING"
+    ).length;
+  }, [orders]);
+
+  const paidTotal = useMemo(() => {
+    return orders
+      .filter(
         (order) =>
           order.status === "PAID" ||
-          order.status ===
-            "COMPLETED"
-      ).length;
-    }, [orders]);
-
-  const pendingOrderCount =
-    useMemo(() => {
-      return orders.filter(
-        (order) =>
-          order.status ===
-          "PAYMENT_PENDING"
-      ).length;
-    }, [orders]);
-
-  const paidTotal =
-    useMemo(() => {
-      return orders
-        .filter(
-          (order) =>
-            order.status === "PAID" ||
-            order.status ===
-              "COMPLETED"
-        )
-        .reduce(
-          (sum, order) =>
-            sum +
-            Number(
-              order.totalPrice || 0
-            ),
-          0
-        );
-    }, [orders]);
+          order.status === "COMPLETED"
+      )
+      .reduce(
+        (sum, order) =>
+          sum +
+          Number(order.totalPrice || 0),
+        0
+      );
+  }, [orders]);
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
@@ -456,9 +349,7 @@ function OrdersPage() {
               to="/cart"
               className="flex items-center gap-2 transition hover:text-cyan-400"
             >
-              <ShoppingCart
-                size={18}
-              />
+              <ShoppingCart size={18} />
               CART
             </Link>
 
@@ -476,9 +367,7 @@ function OrdersPage() {
       <main className="mx-auto max-w-7xl px-6 py-10">
         <button
           type="button"
-          onClick={() => {
-            navigate("/home");
-          }}
+          onClick={() => navigate("/home")}
           className="mb-7 flex items-center gap-2 text-sm text-slate-400 transition hover:text-cyan-400"
         >
           <ArrowLeft size={17} />
@@ -517,7 +406,6 @@ function OrdersPage() {
                     : ""
                 }
               />
-
               새로고침
             </button>
           </div>
@@ -592,9 +480,7 @@ function OrdersPage() {
                     </p>
 
                     <p className="mt-2 text-xl font-black text-cyan-400">
-                      {formatPrice(
-                        paidTotal
-                      )}
+                      {formatPrice(paidTotal)}
                     </p>
                   </div>
 
@@ -624,11 +510,11 @@ function OrdersPage() {
 
               <select
                 value={statusFilter}
-                onChange={(event) => {
+                onChange={(event) =>
                   setStatusFilter(
                     event.target.value
-                  );
-                }}
+                  )
+                }
                 className="rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-cyan-500"
               >
                 <option value="ALL">
@@ -719,10 +605,7 @@ function OrdersPage() {
                 to="/products"
                 className="mt-7 inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-6 py-3 font-black text-slate-950 transition hover:bg-cyan-400"
               >
-                <ShoppingCart
-                  size={18}
-                />
-
+                <ShoppingCart size={18} />
                 상품 둘러보기
               </Link>
             </section>
@@ -731,8 +614,7 @@ function OrdersPage() {
         {!loading &&
           !message &&
           orders.length > 0 &&
-          filteredOrders.length ===
-            0 && (
+          filteredOrders.length === 0 && (
             <section className="rounded-2xl border border-slate-800 bg-slate-900 p-14 text-center">
               <Package
                 size={52}
@@ -745,11 +627,9 @@ function OrdersPage() {
 
               <button
                 type="button"
-                onClick={() => {
-                  setStatusFilter(
-                    "ALL"
-                  );
-                }}
+                onClick={() =>
+                  setStatusFilter("ALL")
+                }
                 className="mt-6 rounded-xl border border-slate-700 px-6 py-3 font-bold text-slate-300 transition hover:border-cyan-500 hover:text-cyan-400"
               >
                 전체 주문 보기
@@ -759,263 +639,232 @@ function OrdersPage() {
 
         {!loading &&
           !message &&
-          filteredOrders.length >
-            0 && (
+          filteredOrders.length > 0 && (
             <section className="space-y-5">
-              {filteredOrders.map(
-                (order) => {
-                  const statusInfo =
-                    getOrderStatus(
-                      order.status
-                    );
+              {filteredOrders.map((order) => {
+                const statusInfo =
+                  getOrderStatus(order.status);
 
-                  const StatusIcon =
-                    statusInfo.icon;
+                const StatusIcon =
+                  statusInfo.icon;
 
-                  const expanded =
-                    expandedOrderIds.has(
-                      order.orderId
-                    );
+                const expanded =
+                  expandedOrderIds.has(
+                    order.orderId
+                  );
 
-                  const items =
-                    Array.isArray(
-                      order.items
-                    )
-                      ? order.items
-                      : [];
+                const items =
+                  Array.isArray(order.items)
+                    ? order.items
+                    : [];
 
-                  const itemCount =
-                    items.reduce(
-                      (sum, item) =>
-                        sum +
-                        Number(
-                          item.quantity ||
-                            0
-                        ),
-                      0
-                    );
+                const itemCount =
+                  items.reduce(
+                    (sum, item) =>
+                      sum +
+                      Number(
+                        item.quantity || 0
+                      ),
+                    0
+                  );
 
-                  return (
-                    <article
-                      key={
-                        order.orderId
+                return (
+                  <article
+                    key={order.orderId}
+                    className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900"
+                  >
+                    <button
+                      type="button"
+                      onClick={() =>
+                        toggleOrder(
+                          order.orderId
+                        )
                       }
-                      className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900"
+                      className="flex w-full flex-col gap-5 p-6 text-left transition hover:bg-slate-800/40 md:flex-row md:items-center md:justify-between"
                     >
-                      <button
-                        type="button"
-                        onClick={() => {
-                          toggleOrder(
-                            order.orderId
-                          );
-                        }}
-                        className="flex w-full flex-col gap-5 p-6 text-left transition hover:bg-slate-800/40 md:flex-row md:items-center md:justify-between"
-                      >
-                        <div className="flex items-start gap-4">
-                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-800">
-                            <Receipt
-                              size={24}
-                              className="text-cyan-400"
-                            />
-                          </div>
-
-                          <div>
-                            <div className="flex flex-wrap items-center gap-3">
-                              <h2 className="text-xl font-black">
-                                주문번호{" "}
-                                {
-                                  order.orderId
-                                }
-                              </h2>
-
-                              <span
-                                className={
-                                  "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold " +
-                                  statusInfo.className
-                                }
-                              >
-                                <StatusIcon
-                                  size={14}
-                                />
-
-                                {
-                                  statusInfo.label
-                                }
-                              </span>
-                            </div>
-
-                            <div className="mt-2 flex items-center gap-2 text-sm text-slate-400">
-                              <CalendarDays
-                                size={16}
-                              />
-
-                              {formatOrderDate(
-                                order.orderedAt
-                              )}
-                            </div>
-                          </div>
+                      <div className="flex items-start gap-4">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-800">
+                          <Receipt
+                            size={24}
+                            className="text-cyan-400"
+                          />
                         </div>
 
-                        <div className="flex items-center justify-between gap-6 md:justify-end">
-                          <div className="text-right">
-                            <p className="text-sm text-slate-500">
-                              상품{" "}
-                              {itemCount}개
+                        <div>
+                          <div className="flex flex-wrap items-center gap-3">
+                            <h2 className="text-xl font-black">
+                              주문번호{" "}
+                              {order.orderId}
+                            </h2>
+
+                            <span
+                              className={
+                                "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold " +
+                                statusInfo.className
+                              }
+                            >
+                              <StatusIcon size={14} />
+                              {statusInfo.label}
+                            </span>
+                          </div>
+
+                          <div className="mt-2 flex items-center gap-2 text-sm text-slate-400">
+                            <CalendarDays size={16} />
+
+                            {formatOrderDate(
+                              order.orderedAt
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between gap-6 md:justify-end">
+                        <div className="text-right">
+                          <p className="text-sm text-slate-500">
+                            상품 {itemCount}개
+                          </p>
+
+                          <p className="mt-1 text-xl font-black text-cyan-400">
+                            {formatPrice(
+                              order.totalPrice
+                            )}
+                          </p>
+                        </div>
+
+                        {expanded ? (
+                          <ChevronUp
+                            size={22}
+                            className="text-slate-400"
+                          />
+                        ) : (
+                          <ChevronDown
+                            size={22}
+                            className="text-slate-400"
+                          />
+                        )}
+                      </div>
+                    </button>
+
+                    {expanded && (
+                      <div className="border-t border-slate-800 p-5 sm:p-6">
+                        <div className="mb-4 flex items-center justify-between gap-4">
+                          <h3 className="font-bold">
+                            주문 상품
+                          </h3>
+
+                          <span className="text-sm text-slate-500">
+                            총 {items.length}종
+                          </span>
+                        </div>
+
+                        <div className="space-y-3">
+                          {items.map(
+                            (item, index) => (
+                              <article
+                                key={
+                                  item.productId +
+                                  "-" +
+                                  index
+                                }
+                                className="grid gap-4 rounded-xl border border-slate-800 bg-slate-950 p-4 sm:grid-cols-[64px_minmax(0,1fr)_auto] sm:items-center"
+                              >
+                                <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-slate-800">
+                                  <Package
+                                    size={28}
+                                    className="text-cyan-400"
+                                  />
+                                </div>
+
+                                <div className="min-w-0">
+                                  <p className="text-sm font-semibold text-slate-500">
+                                    {item.brand}
+                                  </p>
+
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      navigate(
+                                        `/products/${item.productId}`,
+                                        {
+                                          state: {
+                                            from: "/orders",
+                                          },
+                                        }
+                                      )
+                                    }
+                                    className="mt-1 break-words text-left text-lg font-bold transition hover:text-cyan-400"
+                                  >
+                                    {
+                                      item.productName
+                                    }
+                                  </button>
+
+                                  <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-slate-400">
+                                    <span>
+                                      주문 단가{" "}
+                                      <strong className="text-slate-200">
+                                        {formatPrice(
+                                          item.orderPrice
+                                        )}
+                                      </strong>
+                                    </span>
+
+                                    <span>
+                                      수량{" "}
+                                      <strong className="text-slate-200">
+                                        {
+                                          item.quantity
+                                        }
+                                        개
+                                      </strong>
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="text-left sm:text-right">
+                                  <p className="text-sm text-slate-500">
+                                    상품 합계
+                                  </p>
+
+                                  <p className="mt-1 text-lg font-black text-cyan-400">
+                                    {formatPrice(
+                                      item.subtotal
+                                    )}
+                                  </p>
+                                </div>
+                              </article>
+                            )
+                          )}
+                        </div>
+
+                        <div className="mt-5 flex flex-col justify-between gap-4 rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 sm:flex-row sm:items-center">
+                          <div>
+                            <p className="text-sm text-slate-400">
+                              주문 상태
                             </p>
 
-                            <p className="mt-1 text-xl font-black text-cyan-400">
+                            <p className="mt-1 font-bold">
+                              {statusInfo.label}
+                            </p>
+                          </div>
+
+                          <div className="sm:text-right">
+                            <p className="text-sm text-slate-400">
+                              총 주문 금액
+                            </p>
+
+                            <p className="mt-1 text-2xl font-black text-cyan-400">
                               {formatPrice(
                                 order.totalPrice
                               )}
                             </p>
                           </div>
-
-                          {expanded ? (
-                            <ChevronUp
-                              size={22}
-                              className="text-slate-400"
-                            />
-                          ) : (
-                            <ChevronDown
-                              size={22}
-                              className="text-slate-400"
-                            />
-                          )}
                         </div>
-                      </button>
-
-                      {expanded && (
-                        <div className="border-t border-slate-800 p-5 sm:p-6">
-                          <div className="mb-4 flex items-center justify-between gap-4">
-                            <h3 className="font-bold">
-                              주문 상품
-                            </h3>
-
-                            <span className="text-sm text-slate-500">
-                              총{" "}
-                              {items.length}
-                              종
-                            </span>
-                          </div>
-
-                          <div className="space-y-3">
-                            {items.map(
-                              (
-                                item,
-                                index
-                              ) => (
-                                <article
-                                  key={
-                                    item.productId +
-                                    "-" +
-                                    index
-                                  }
-                                  className="grid gap-4 rounded-xl border border-slate-800 bg-slate-950 p-4 sm:grid-cols-[64px_minmax(0,1fr)_auto] sm:items-center"
-                                >
-                                  <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-slate-800">
-                                    <Package
-                                      size={28}
-                                      className="text-cyan-400"
-                                    />
-                                  </div>
-
-                                  <div className="min-w-0">
-                                    <p className="text-sm font-semibold text-slate-500">
-                                      {
-                                        item.brand
-                                      }
-                                    </p>
-
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        navigate(
-                                          `/products/${item.productId}`,
-                                          {
-                                            state:
-                                              {
-                                                from:
-                                                  "/orders",
-                                              },
-                                          }
-                                        );
-                                      }}
-                                      className="mt-1 break-words text-left text-lg font-bold transition hover:text-cyan-400"
-                                    >
-                                      {
-                                        item.productName
-                                      }
-                                    </button>
-
-                                    <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-slate-400">
-                                      <span>
-                                        주문 단가{" "}
-                                        <strong className="text-slate-200">
-                                          {formatPrice(
-                                            item.orderPrice
-                                          )}
-                                        </strong>
-                                      </span>
-
-                                      <span>
-                                        수량{" "}
-                                        <strong className="text-slate-200">
-                                          {
-                                            item.quantity
-                                          }
-                                          개
-                                        </strong>
-                                      </span>
-                                    </div>
-                                  </div>
-
-                                  <div className="text-left sm:text-right">
-                                    <p className="text-sm text-slate-500">
-                                      상품 합계
-                                    </p>
-
-                                    <p className="mt-1 text-lg font-black text-cyan-400">
-                                      {formatPrice(
-                                        item.subtotal
-                                      )}
-                                    </p>
-                                  </div>
-                                </article>
-                              )
-                            )}
-                          </div>
-
-                          <div className="mt-5 flex flex-col justify-between gap-4 rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 sm:flex-row sm:items-center">
-                            <div>
-                              <p className="text-sm text-slate-400">
-                                주문 상태
-                              </p>
-
-                              <p className="mt-1 font-bold">
-                                {
-                                  statusInfo.label
-                                }
-                              </p>
-                            </div>
-
-                            <div className="sm:text-right">
-                              <p className="text-sm text-slate-400">
-                                총 주문 금액
-                              </p>
-
-                              <p className="mt-1 text-2xl font-black text-cyan-400">
-                                {formatPrice(
-                                  order.totalPrice
-                                )}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </article>
-                  );
-                }
-              )}
+                      </div>
+                    )}
+                  </article>
+                );
+              })}
             </section>
           )}
       </main>
@@ -1024,3 +873,4 @@ function OrdersPage() {
 }
 
 export default OrdersPage;
+

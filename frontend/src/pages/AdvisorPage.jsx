@@ -20,6 +20,22 @@ import {
 } from "react-router-dom";
 
 import api from "../api/axios.js";
+const CATEGORY_LABELS = {
+  CPU: "CPU",
+  GPU: "그래픽카드",
+  RAM: "메모리",
+  SSD: "저장장치",
+  MOTHERBOARD: "메인보드",
+  POWER: "파워",
+};
+
+function getCategoryLabel(category) {
+  return (
+    CATEGORY_LABELS[category] ||
+    category ||
+    "부품"
+  );
+}
 
 function AdvisorPage() {
   const navigate = useNavigate();
@@ -48,58 +64,76 @@ function AdvisorPage() {
   const [message, setMessage] =
     useState("");
 
+  const [category, setCategory] =
+  useState("GPU");
+
   useEffect(() => {
-    let active = true;
+  let active = true;
 
-    async function loadGpuProducts() {
-      setLoadingProducts(true);
-      setMessage("");
+  async function loadProducts() {
+    setLoadingProducts(true);
+    setMessage("");
+    setProducts([]);
+    setTargetProductId("");
+    setResult(null);
 
-      try {
-        const response = await api.get(
+    try {
+      const response =
+        await api.get(
           "/products",
           {
             params: {
-              category: "GPU",
+              category,
             },
           }
         );
 
-        if (active) {
-          setProducts(response.data);
-        }
-      } catch (error) {
-        if (!active) {
-          return;
-        }
+      if (!active) {
+        return;
+      }
 
-        setMessage(
-          error.response?.data?.message ||
-            "GPU 상품을 불러오지 못했습니다."
-        );
-      } finally {
-        if (active) {
-          setLoadingProducts(false);
-        }
+      setProducts(
+        Array.isArray(response.data)
+          ? response.data
+          : []
+      );
+    } catch (error) {
+      if (!active) {
+        return;
+      }
+
+      setMessage(
+        error.response?.data?.message ||
+          `${getCategoryLabel(
+            category
+          )} 상품을 불러오지 못했습니다.`
+      );
+    } finally {
+      if (active) {
+        setLoadingProducts(false);
       }
     }
+  }
 
-    loadGpuProducts();
+  loadProducts();
 
-    return () => {
-      active = false;
-    };
-  }, []);
+  return () => {
+    active = false;
+  };
+}, [category]);
 
   async function handleRecommend(event) {
     event.preventDefault();
 
     if (!targetProductId) {
-      setMessage(
-        "비교할 GPU 상품을 선택해 주세요."
-      );
-      return;
-    }
+  setMessage(
+    `비교할 ${getCategoryLabel(
+      category
+    )} 상품을 선택해 주세요.`
+  );
+
+  return;
+}
 
     if (!purpose.trim()) {
       setMessage(
@@ -126,16 +160,20 @@ function AdvisorPage() {
 
     try {
       const response = await api.post(
-        "/ai/recommend",
-        {
-          targetProductId:
-            Number(targetProductId),
+  "/ai/recommend",
+  {
+    category,
 
-          purpose: purpose.trim(),
+    targetProductId:
+      Number(targetProductId),
 
-          budget: numericBudget,
-        }
-      );
+    purpose:
+      purpose.trim(),
+
+    budget:
+      numericBudget,
+  }
+);
 
       setResult(response.data);
     } catch (error) {
@@ -170,9 +208,11 @@ function AdvisorPage() {
   }
 
   function handleLogout() {
-    localStorage.removeItem("token");
-    navigate("/home");
-  }
+  localStorage.removeItem("token");
+  localStorage.removeItem("role");
+
+  navigate("/home");
+}
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
@@ -258,10 +298,10 @@ function AdvisorPage() {
               </h1>
 
               <p className="mt-3 max-w-2xl leading-7 text-slate-300">
-                MY PC의 현재 GPU와 구매 예정
-                GPU를 비교하고, 예산과 사용 목적,
-                호환성을 함께 분석합니다.
-              </p>
+  MY PC의 현재 부품과 구매 예정
+  부품을 비교하고, 예산과 사용 목적,
+  호환성을 함께 분석합니다.
+</p>
             </div>
 
             <div className="flex h-24 w-24 items-center justify-center rounded-2xl border border-green-500/30 bg-green-500/10">
@@ -280,50 +320,73 @@ function AdvisorPage() {
             </h2>
 
             <p className="mt-2 text-sm leading-6 text-slate-400">
-              구매를 고려하는 GPU와 사용 목적,
-              최대 예산을 입력해 주세요.
-            </p>
+  구매를 고려하는 부품 종류와
+  상품, 사용 목적, 최대 예산을
+  입력해 주세요.
+</p>
 
             <form
               onSubmit={handleRecommend}
               className="mt-7 space-y-5"
             >
               <div>
-                <label
-                  htmlFor="targetProduct"
-                  className="mb-2 block text-sm font-bold text-slate-300"
-                >
-                  비교할 GPU
-                </label>
+  <label
+    htmlFor="category"
+    className="mb-2 block text-sm font-bold text-slate-300"
+  >
+    추천 부품 종류
+  </label>
 
-                <select
-                  id="targetProduct"
-                  value={targetProductId}
-                  disabled={loadingProducts}
-                  onChange={(event) => {
-                    setTargetProductId(
-                      event.target.value
-                    );
-                  }}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3.5 text-white outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 disabled:opacity-50"
-                >
-                  <option value="">
-                    {loadingProducts
-                      ? "상품을 불러오는 중..."
-                      : "GPU 상품을 선택하세요"}
-                  </option>
+  <select
+    id="category"
+    value={category}
+    onChange={(event) => {
+      setCategory(event.target.value);
+    }}
+    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3.5 text-white outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
+  >
+    <option value="CPU">CPU</option>
+    <option value="GPU">그래픽카드</option>
+    <option value="RAM">메모리</option>
+    <option value="SSD">저장장치</option>
+    <option value="MOTHERBOARD">메인보드</option>
+    <option value="POWER">파워</option>
+  </select>
+</div>
 
-                  {products.map((product) => (
-                    <option
-                      key={product.id}
-                      value={product.id}
-                    >
-                      {product.name} /{" "}
-                      {formatPrice(product.price)}
-                    </option>
-                  ))}
-                </select>
-              </div>
+<div>
+  <label
+    htmlFor="targetProduct"
+    className="mb-2 block text-sm font-bold text-slate-300"
+  >
+    비교할 {getCategoryLabel(category)}
+  </label>
+
+  <select
+    id="targetProduct"
+    value={targetProductId}
+    disabled={loadingProducts}
+    onChange={(event) => {
+      setTargetProductId(event.target.value);
+    }}
+    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3.5 text-white outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 disabled:opacity-50"
+  >
+    <option value="">
+      {loadingProducts
+        ? "상품을 불러오는 중..."
+        : `${getCategoryLabel(category)} 상품을 선택하세요`}
+    </option>
+
+    {products.map((product) => (
+      <option
+        key={product.id}
+        value={product.id}
+      >
+        {product.name} / {formatPrice(product.price)}
+      </option>
+    ))}
+  </select>
+</div>
 
               <div>
                 <label
@@ -425,11 +488,11 @@ function AdvisorPage() {
                 </h2>
 
                 <p className="mt-3 max-w-md leading-7 text-slate-400">
-                  GPU, 사용 목적과 예산을 입력하면
-                  성능 향상률, 예산 적합성,
-                  호환성을 종합해 구매 판단을
-                  제공합니다.
-                </p>
+  부품 종류, 구매 대상, 사용 목적과
+  예산을 입력하면 성능 향상률,
+  예산 적합성, 호환성을 종합해
+  구매 판단을 제공합니다.
+</p>
               </div>
             )}
 
@@ -473,8 +536,9 @@ function AdvisorPage() {
                 <div className="mt-7 grid gap-4 sm:grid-cols-2">
                   <div className="rounded-xl border border-slate-800 bg-slate-950 p-5">
                     <p className="text-sm text-slate-500">
-                      현재 GPU
-                    </p>
+  현재{" "}
+  {getCategoryLabel(category)}
+</p>
 
                     <p className="mt-2 text-lg font-bold">
                       {result.currentProductName}
@@ -483,8 +547,9 @@ function AdvisorPage() {
 
                   <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-5">
                     <p className="text-sm text-slate-400">
-                      비교 GPU
-                    </p>
+  비교{" "}
+  {getCategoryLabel(category)}
+</p>
 
                     <p className="mt-2 text-lg font-bold text-cyan-400">
                       {result.targetProductName}

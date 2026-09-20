@@ -60,34 +60,102 @@ public class CompareService {
         return result;
     }
 
+
     /*
-     * MY PC ID를 직접 받아 현재 GPU와 구매 예정 GPU 비교
+     * MY PC에서 카테고리에 맞는 현재 부품 가져오기
+     */
+    private Product getCurrentProduct(
+            MyPc myPc,
+            String category
+    ) {
+
+        return switch (category) {
+
+            case "CPU" ->
+                    myPc.getCpu();
+
+            case "GPU" ->
+                    myPc.getGpu();
+
+            case "RAM" ->
+                    myPc.getRam();
+
+            case "SSD" ->
+                    myPc.getSsd();
+
+            case "MOTHERBOARD" ->
+                    myPc.getMotherboard();
+
+            case "POWER" ->
+                    myPc.getPower();
+
+            default ->
+                    throw new RuntimeException(
+                            "지원하지 않는 부품 카테고리입니다."
+                    );
+        };
+    }
+
+
+    /*
+     * MY PC ID를 기준으로
+     * 카테고리에 맞는 현재 부품과 구매 예정 상품 비교
      */
     public Map<String, Object> compareWithMyPc(
             Long myPcId,
-            Long targetId
+            Long targetId,
+            String category
     ) {
 
         MyPc myPc = myPcRepository.findById(myPcId)
                 .orElseThrow(() ->
-                        new RuntimeException("MY PC를 찾을 수 없습니다.")
+                        new RuntimeException(
+                                "MY PC를 찾을 수 없습니다."
+                        )
                 );
 
-        Product current = myPc.getGpu();
+        category = category.trim().toUpperCase();
+
+        Product current =
+                getCurrentProduct(
+                        myPc,
+                        category
+                );
 
         if (current == null) {
             throw new RuntimeException(
-                    "MY PC에 GPU가 등록되어 있지 않습니다."
+                    "MY PC에 현재 "
+                            + category
+                            + " 부품이 등록되어 있지 않습니다."
             );
         }
 
-        Product target = productRepository.findById(targetId)
-                .orElseThrow(() ->
-                        new RuntimeException("비교할 상품을 찾을 수 없습니다.")
-                );
+        Product target =
+                productRepository.findById(targetId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "비교할 상품을 찾을 수 없습니다."
+                                )
+                        );
 
-        validateGpuTarget(target);
-        validatePerformanceScore(current, target);
+        /*
+         * 현재 부품과 구매 예정 상품의
+         * 카테고리가 같은지 확인
+         */
+        if (target.getCategory() == null
+                || !category.equalsIgnoreCase(
+                        target.getCategory()
+                )) {
+
+            throw new RuntimeException(
+                    "현재 부품과 비교할 상품의 카테고리가 다릅니다."
+            );
+        }
+
+        validatePerformanceScore(
+                current,
+                target
+        );
 
         int performanceDiff =
                 target.getPerformanceScore()
@@ -98,10 +166,14 @@ public class CompareService {
                         - current.getPrice();
 
         String recommendation =
-                createScoreRecommendation(performanceDiff);
+                createScoreRecommendation(
+                        performanceDiff
+                );
 
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result =
+                new HashMap<>();
 
+        result.put("category", category);
         result.put("current", current.getName());
         result.put("target", target.getName());
         result.put("performanceDiff", performanceDiff);
@@ -111,51 +183,107 @@ public class CompareService {
         return result;
     }
 
+
     /*
-     * JWT 로그인 사용자의 MY PC GPU와 구매 예정 GPU 비교
-     * 이 메서드는 CompareResponse DTO를 반환
+     * JWT 로그인 사용자의 MY PC에서
+     * 카테고리에 맞는 현재 부품과 구매 예정 상품 비교
      */
     public CompareResponse compareLoginUser(
             String email,
-            Long targetId
+            Long targetId,
+            String category
     ) {
 
-        MyPc myPc = myPcRepository.findByUserEmail(email)
-                .orElseThrow(() ->
-                        new RuntimeException("등록된 MY PC가 없습니다.")
-                );
+        MyPc myPc =
+                myPcRepository.findByUserEmail(email)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "등록된 MY PC가 없습니다."
+                                )
+                        );
 
-        Product current = myPc.getGpu();
+        category = category.trim().toUpperCase();
+
+        /*
+         * 선택한 카테고리의 현재 부품 가져오기
+         */
+        Product current =
+                getCurrentProduct(
+                        myPc,
+                        category
+                );
 
         if (current == null) {
             throw new RuntimeException(
-                    "MY PC에 GPU가 등록되어 있지 않습니다."
+                    "MY PC에 현재 "
+                            + category
+                            + " 부품이 등록되어 있지 않습니다."
             );
         }
 
-        Product target = productRepository.findById(targetId)
-                .orElseThrow(() ->
-                        new RuntimeException("비교할 상품을 찾을 수 없습니다.")
-                );
+        /*
+         * 구매 예정 상품 조회
+         */
+        Product target =
+                productRepository.findById(targetId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "비교할 상품을 찾을 수 없습니다."
+                                )
+                        );
 
-        validateGpuTarget(target);
-        validatePerformanceScore(current, target);
+        /*
+         * 현재 부품과 구매 예정 상품의
+         * 카테고리가 같은지 확인
+         */
+        if (target.getCategory() == null
+                || !category.equalsIgnoreCase(
+                        target.getCategory()
+                )) {
 
+            throw new RuntimeException(
+                    "현재 부품과 비교할 상품의 카테고리가 다릅니다."
+            );
+        }
+
+        /*
+         * 성능 점수 확인
+         */
+        validatePerformanceScore(
+                current,
+                target
+        );
+
+        /*
+         * 성능 차이
+         */
         int performanceDiff =
                 target.getPerformanceScore()
                         - current.getPerformanceScore();
 
+        /*
+         * 성능 향상률
+         */
         double performanceGainPercent =
                 ((double) performanceDiff
-                        / current.getPerformanceScore()) * 100;
+                        / current.getPerformanceScore())
+                        * 100;
 
         double roundedGainPercent =
-                Math.round(performanceGainPercent * 10) / 10.0;
+                Math.round(
+                        performanceGainPercent * 10
+                ) / 10.0;
 
+        /*
+         * 가격 차이
+         */
         long priceDiff =
                 target.getPrice()
                         - current.getPrice();
 
+        /*
+         * 추천 문구
+         */
         String recommendation =
                 createPercentRecommendation(
                         performanceGainPercent
@@ -164,27 +292,16 @@ public class CompareService {
         return CompareResponse.builder()
                 .current(current.getName())
                 .target(target.getName())
-                .performanceGainPercent(roundedGainPercent)
+                .performanceGainPercent(
+                        roundedGainPercent
+                )
                 .priceDiff(priceDiff)
-                .recommendation(recommendation)
+                .recommendation(
+                        recommendation
+                )
                 .build();
     }
 
-    /*
-     * 비교 대상이 GPU인지 확인
-     */
-    private void validateGpuTarget(Product target) {
-
-        if (target.getCategory() == null
-                || !"GPU".equalsIgnoreCase(
-                        target.getCategory()
-                )) {
-
-            throw new RuntimeException(
-                    "현재는 GPU 상품만 비교할 수 있습니다."
-            );
-        }
-    }
 
     /*
      * 성능 점수가 정상적으로 입력됐는지 확인
@@ -203,11 +320,13 @@ public class CompareService {
         }
 
         if (current.getPerformanceScore() <= 0) {
+
             throw new RuntimeException(
                     "현재 부품의 성능 점수가 올바르지 않습니다."
             );
         }
     }
+
 
     /*
      * 단순 점수 차이에 따른 추천
@@ -226,6 +345,7 @@ public class CompareService {
 
         return "현재 부품을 계속 사용해도 충분합니다.";
     }
+
 
     /*
      * 성능 향상률에 따른 추천

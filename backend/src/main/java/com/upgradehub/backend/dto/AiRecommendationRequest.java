@@ -5,11 +5,15 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
 
 @Getter
 @Setter
 public class AiRecommendationRequest {
-
+    @NotBlank(
+        message = "추천 카테고리가 필요합니다."
+    )
+    private String category;
     @NotNull(message = "비교할 상품 ID를 입력해 주세요.")
     private Long targetProductId;
 

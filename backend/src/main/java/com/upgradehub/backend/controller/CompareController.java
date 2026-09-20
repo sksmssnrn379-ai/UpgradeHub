@@ -46,6 +46,7 @@ public class CompareController {
     @GetMapping("/me")
     public CompareResponse compareLoginUser(
             @RequestParam Long targetId,
+            @RequestParam String category,
             Principal principal
     ) {
 
@@ -53,7 +54,8 @@ public class CompareController {
 
         return compareService.compareLoginUser(
                 email,
-                targetId
+                targetId,
+                category
         );
     }
 }

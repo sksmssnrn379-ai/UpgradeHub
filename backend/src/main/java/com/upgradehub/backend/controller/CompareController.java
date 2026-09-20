@@ -1,3 +1,4 @@
+```java
 package com.upgradehub.backend.controller;
 
 import com.upgradehub.backend.dto.CompareResponse;
@@ -7,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.Map;
-import org.springframework.web.bind.annotation.RequestParam;
+
 @RestController
 @RequestMapping("/compare")
 @RequiredArgsConstructor
@@ -18,29 +19,29 @@ public class CompareController {
     @GetMapping
     public Map<String, Object> compare(
             @RequestParam Long currentId,
-            @RequestParam Long targetId
+            @RequestParam Long targetId,
             @RequestParam String category
     ) {
 
         return compareService.compareWithMyPc(
-        myPcId,
-        productId,
-        category
-);
+                currentId,
+                targetId,
+                category
+        );
     }
 
     @GetMapping("/mypc")
     public Map<String, Object> compareMyPc(
             @RequestParam Long myPcId,
-            @RequestParam Long targetId
+            @RequestParam Long targetId,
             @RequestParam String category
     ) {
 
         return compareService.compareWithMyPc(
-        myPcId,
-        productId,
-        category
-);
+                myPcId,
+                targetId,
+                category
+        );
     }
 
     @GetMapping("/me")

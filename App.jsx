@@ -9,6 +9,7 @@ import SignupPage from "./pages/SignupPage.jsx";
 import CheckoutPage from "./pages/CheckoutPage.jsx";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage.jsx";
 import PaymentFailPage from "./pages/PaymentFailPage.jsx";
+import OrdersPage from "./pages/OrdersPage.jsx";
 
 function App() {
   return (
@@ -59,6 +60,10 @@ function App() {
         path="/payment/fail"
         element={<PaymentFailPage />}
       />
+      <Route
+  path="/orders"
+  element={<OrdersPage />}
+/>
     </Routes>
   );
 }

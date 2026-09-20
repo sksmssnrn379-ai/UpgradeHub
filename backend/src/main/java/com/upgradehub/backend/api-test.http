@@ -1,21 +1,2 @@
-POST https://emptyplace.duckdns.org/products/10/spec
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuZXd1c2VyQHRlc3QuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzg5ODExNjc1LCJleHAiOjE3ODk4MTUyNzV9.SHQBMcCU-QN2dpK_DXrvuCewT7gB3v2G83yh0-bvEqY
-Content-Type: application/json
-
-{
-  "cpuSocket": "AM4",
-  "memoryType": "DDR4",
-  "powerConsumption": 65,
-  "recommendedPower": 500,
-  "powerCapacity": null,
-  "gpuInterface": null,
-  "storageInterface": null,
-  "widthMm": 40,
-  "depthMm": 40,
-  "heightMm": 6,
-  "weightG": 79,
-  "baseClockMhz": 3500,
-  "boostClockMhz": 4400,
-  "coreCount": 6,
-  "threadCount": 12
-}
+GET https://emptyplace.duckdns.org/orders
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJza3Ntc3Nucm4zNzlAZ21haWwuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3ODk5MTI2MTIsImV4cCI6MTc4OTkxNjIxMn0.kOi9hlk9YQU3zRilvgGXuttBYSq030kUIt-x8VmVMeM

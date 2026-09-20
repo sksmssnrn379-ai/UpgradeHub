@@ -50,4 +50,11 @@ public class AdminProductRequest {
     private Integer performanceScore;
 
     private String imageUrl;
+    private Double benchmarkScore;
+
+private String benchmarkType;
+
+private String benchmarkSource;
+
+private LocalDate benchmarkUpdatedAt;
 }

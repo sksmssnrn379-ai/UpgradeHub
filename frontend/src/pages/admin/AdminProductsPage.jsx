@@ -3,12 +3,10 @@ import {
   Pencil,
   Plus,
   RefreshCw,
+  Ruler,
   Save,
   Search,
   X,
-} from "lucide-react";
-import {
-  Ruler,
 } from "lucide-react";
 
 import ProductSpecModal from "../../components/ProductSpecModal.jsx";
@@ -27,8 +25,11 @@ const EMPTY_FORM = {
   category: "GPU",
   price: 0,
   stock: 0,
-  performanceScore: 0,
   imageUrl: "",
+  benchmarkScore: "",
+  benchmarkType: "",
+  benchmarkSource: "",
+  benchmarkUpdatedAt: "",
 };
 
 function AdminProductsPage() {
@@ -169,25 +170,33 @@ function AdminProductsPage() {
   }
 
   function openEditForm(product) {
-    setForm({
-      id: product.id,
-      name: product.name || "",
-      brand: product.brand || "",
-      category:
-        product.category || "GPU",
-      price:
-        product.price ?? 0,
-      stock:
-        product.stock ?? 0,
-      performanceScore:
-        product.performanceScore ?? 0,
-      imageUrl:
-        product.imageUrl || "",
-    });
+  setForm({
+    id: product.id,
+    name: product.name || "",
+    brand: product.brand || "",
+    category:
+      product.category || "GPU",
+    price:
+      product.price ?? 0,
+    stock:
+      product.stock ?? 0,
+    performanceScore:
+      product.performanceScore ?? null,
+    imageUrl:
+      product.imageUrl || "",
+    benchmarkScore:
+      product.benchmarkScore ?? "",
+    benchmarkType:
+      product.benchmarkType || "",
+    benchmarkSource:
+      product.benchmarkSource || "",
+    benchmarkUpdatedAt:
+      product.benchmarkUpdatedAt || "",
+  });
 
-    setImageError(false);
-    setMessage("");
-  }
+  setImageError(false);
+  setMessage("");
+}
 
   function closeForm() {
     if (saving) {
@@ -239,8 +248,8 @@ function AdminProductsPage() {
 
       setMessageType("error");
       return false;
-    }
-
+    } 
+    
     const price =
       Number(form.price);
 
@@ -271,24 +280,28 @@ function AdminProductsPage() {
       return false;
     }
 
-    const performanceScore =
-      Number(
-        form.performanceScore
-      );
-
     if (
-      !Number.isFinite(
-        performanceScore
-      ) ||
-      performanceScore < 0
-    ) {
-      setMessage(
-        "성능 점수는 0 이상의 숫자여야 합니다."
-      );
+  form.benchmarkScore !== ""
+) {
+  const benchmarkScore =
+    Number(
+      form.benchmarkScore
+    );
 
-      setMessageType("error");
-      return false;
-    }
+  if (
+    !Number.isFinite(
+      benchmarkScore
+    ) ||
+    benchmarkScore < 0
+  ) {
+    setMessage(
+      "원본 벤치마크 점수는 0 이상의 숫자여야 합니다."
+    );
+
+    setMessageType("error");
+    return false;
+  }
+}
 
     return true;
   }
@@ -307,30 +320,44 @@ function AdminProductsPage() {
     }
 
     const payload = {
-      name:
-        form.name.trim(),
+  name:
+    form.name.trim(),
 
-      brand:
-        form.brand.trim(),
+  brand:
+    form.brand.trim(),
 
-      category:
-        form.category,
+  category:
+    form.category,
 
-      price:
-        Number(form.price),
+  price:
+    Number(form.price),
 
-      stock:
-        Number(form.stock),
+  stock:
+    Number(form.stock),
 
-      performanceScore:
-        Number(
-          form.performanceScore
+  imageUrl:
+    form.imageUrl.trim() ||
+    null,
+
+  benchmarkScore:
+    form.benchmarkScore === ""
+      ? null
+      : Number(
+          form.benchmarkScore
         ),
 
-      imageUrl:
-        form.imageUrl.trim() ||
-        null,
-    };
+  benchmarkType:
+    form.benchmarkType.trim() ||
+    null,
+
+  benchmarkSource:
+    form.benchmarkSource.trim() ||
+    null,
+
+  benchmarkUpdatedAt:
+    form.benchmarkUpdatedAt ||
+    null,
+};
 
     setSaving(true);
     setMessage("");
@@ -715,12 +742,23 @@ function AdminProductsPage() {
                       </span>
 
                       <span>
-                        성능 점수{" "}
-                        <strong>
-                          {product.performanceScore ??
-                            0}
-                        </strong>
-                      </span>
+  계산된 성능 점수{" "}
+  <strong>
+    {product.performanceScore != null
+      ? `${product.performanceScore} / 100`
+      : "정보 없음"}
+  </strong>
+</span>
+                      <span>
+  원본 벤치마크{" "}
+  <strong className="text-violet-300">
+    {product.benchmarkScore != null
+      ? Number(
+          product.benchmarkScore
+        ).toLocaleString("ko-KR")
+      : "정보 없음"}
+  </strong>
+</span>
                     </div>
 
                     {product.imageUrl && (
@@ -955,27 +993,123 @@ function AdminProductsPage() {
               </label>
 
               <label className="space-y-2">
-                <span className="text-sm font-bold text-slate-300">
-                  성능 점수
-                </span>
+                <div className="space-y-2">
+  <span className="text-sm font-bold text-slate-300">
+    계산된 성능 점수
+  </span>
 
-                <input
-                  type="number"
-                  min="0"
-                  step="1"
-                  value={
-                    form.performanceScore
-                  }
-                  onChange={(event) => {
-                    updateForm(
-                      "performanceScore",
-                      event.target.value
-                    );
-                  }}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-cyan-500"
-                />
+  <div className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-slate-300">
+    {form.performanceScore != null
+      ? `${form.performanceScore} / 100`
+      : "벤치마크 저장 후 계산됩니다."}
+  </div>
+
+  <p className="text-xs text-slate-500">
+    원본 벤치마크 점수를 기준으로 서버에서 계산됩니다.
+  </p>
+</div>
               </label>
+              <label className="space-y-2">
+  <span className="text-sm font-bold text-slate-300">
+    원본 벤치마크 점수
+  </span>
 
+  <input
+    type="number"
+    min="0"
+    step="0.01"
+    value={form.benchmarkScore}
+    onChange={(event) => {
+      updateForm(
+        "benchmarkScore",
+        event.target.value
+      );
+    }}
+    placeholder="예: 21500"
+    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none placeholder:text-slate-600 focus:border-cyan-500"
+  />
+</label>
+
+<label className="space-y-2">
+  <span className="text-sm font-bold text-slate-300">
+    벤치마크 유형
+  </span>
+
+  <select
+    value={form.benchmarkType}
+    onChange={(event) => {
+      updateForm(
+        "benchmarkType",
+        event.target.value
+      );
+    }}
+    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-cyan-500"
+  >
+    <option value="">
+      벤치마크 유형 선택
+    </option>
+
+    <option value="CPU_MULTI_CORE">
+      CPU 멀티코어
+    </option>
+
+    <option value="CPU_SINGLE_CORE">
+      CPU 싱글코어
+    </option>
+
+    <option value="CPU_MARK">
+      CPU 종합 성능
+    </option>
+
+    <option value="GPU_RELATIVE_PERFORMANCE">
+      GPU 상대 성능
+    </option>
+
+    <option value="GPU_GAMING_1440P">
+      GPU 1440p 게이밍
+    </option>
+
+    <option value="GPU_GAMING_4K">
+      GPU 4K 게이밍
+    </option>
+  </select>
+</label>
+
+<label className="space-y-2">
+  <span className="text-sm font-bold text-slate-300">
+    벤치마크 출처
+  </span>
+
+  <input
+    value={form.benchmarkSource}
+    onChange={(event) => {
+      updateForm(
+        "benchmarkSource",
+        event.target.value
+      );
+    }}
+    placeholder="예: PassMark, 제조사 자료"
+    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none placeholder:text-slate-600 focus:border-cyan-500"
+  />
+</label>
+
+<label className="space-y-2">
+  <span className="text-sm font-bold text-slate-300">
+    벤치마크 기준일
+  </span>
+
+  <input
+    type="date"
+    value={form.benchmarkUpdatedAt}
+    onChange={(event) => {
+      updateForm(
+        "benchmarkUpdatedAt",
+        event.target.value
+      );
+    }}
+    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-cyan-500"
+  />
+</label>
               <label className="space-y-2 sm:col-span-2">
                 <span className="text-sm font-bold text-slate-300">
                   이미지 경로

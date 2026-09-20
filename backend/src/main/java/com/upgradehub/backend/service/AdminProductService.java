@@ -136,25 +136,35 @@ public class AdminProductService {
     }
 
     private AdminProductResponse toResponse(
-            Product product
-    ) {
-        return AdminProductResponse
-                .builder()
-                .id(product.getId())
-                .name(product.getName())
-                .brand(product.getBrand())
-                .category(
-                        product.getCategory()
-                )
-                .price(product.getPrice())
-                .stock(product.getStock())
-                .performanceScore(
-                        product.getPerformanceScore()
-                )
-                .imageUrl(
-                        product.getImageUrl()
-                )
-                .active(product.getActive())
-                .build();
-    }
+        Product product
+) {
+    return AdminProductResponse
+            .builder()
+            .id(product.getId())
+            .name(product.getName())
+            .brand(product.getBrand())
+            .category(product.getCategory())
+            .price(product.getPrice())
+            .stock(product.getStock())
+            .performanceScore(
+                    product.getPerformanceScore()
+            )
+            .benchmarkScore(
+                    product.getBenchmarkScore()
+            )
+            .benchmarkType(
+                    product.getBenchmarkType()
+            )
+            .benchmarkSource(
+                    product.getBenchmarkSource()
+            )
+            .benchmarkUpdatedAt(
+                    product.getBenchmarkUpdatedAt()
+            )
+            .imageUrl(
+                    product.getImageUrl()
+            )
+            .active(product.getActive())
+            .build();
+}
 }

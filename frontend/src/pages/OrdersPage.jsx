@@ -236,9 +236,10 @@ function OrdersPage() {
    * 페이지 최초 진입 시
    * 주문 목록을 한 번만 조회
    */
-  useEffect(() => {
-    loadOrders();
-  }, [loadOrders]);
+ useEffect(() => {
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  loadOrders();
+}, [loadOrders]);
 
   function toggleOrder(orderId) {
     setExpandedOrderIds((current) => {

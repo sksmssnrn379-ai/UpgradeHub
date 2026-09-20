@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import java.time.LocalDate;
 
 @Getter
 @Builder
@@ -20,4 +21,11 @@ public class AdminProductResponse {
     private Integer performanceScore;
     private String imageUrl;
     private Boolean active;
+    private Double benchmarkScore;
+
+private String benchmarkType;
+
+private String benchmarkSource;
+
+private LocalDate benchmarkUpdatedAt;
 }

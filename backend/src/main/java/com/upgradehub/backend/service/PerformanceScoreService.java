@@ -111,14 +111,18 @@ public class PerformanceScoreService {
     }
 
     @Transactional
-    public void recalculateAll() {
-        List<Product> products =
+    public void recalculateCategory(
+            String category
+    ) {
+        List<Product> categoryProducts =
                 productRepository
-                        .findAll();
+                        .findByCategoryIgnoreCase(
+                                category
+                        );
 
         for (
                 Product product :
-                products
+                categoryProducts
         ) {
             if (
                     product.getBenchmarkScore()
@@ -137,53 +141,66 @@ public class PerformanceScoreService {
         }
 
         productRepository.saveAll(
-                products
+                categoryProducts
         );
 
-        Set<BenchmarkGroup> groups =
-                products.stream()
+        Set<String> benchmarkTypes =
+                categoryProducts.stream()
+                        .map(
+                                Product::getBenchmarkType
+                        )
                         .filter(
-                                product ->
-                                        product.getCategory()
+                                benchmarkType ->
+                                        benchmarkType
                                                 != null
-                                                && product.getBenchmarkType()
-                                                != null
-                                                && !product.getBenchmarkType()
+                                                && !benchmarkType
                                                 .isBlank()
-                                                && product.getBenchmarkScore()
-                                                != null
-                                                && product.getBenchmarkScore()
-                                                > 0
                         )
                         .map(
-                                product ->
-                                        new BenchmarkGroup(
-                                                product.getCategory()
-                                                        .trim()
-                                                        .toUpperCase(),
-                                                product.getBenchmarkType()
-                                                        .trim()
-                                                        .toUpperCase()
-                                        )
+                                benchmarkType ->
+                                        benchmarkType
+                                                .trim()
+                                                .toUpperCase()
                         )
                         .collect(
                                 Collectors.toSet()
                         );
 
         for (
-                BenchmarkGroup group :
-                groups
+                String benchmarkType :
+                benchmarkTypes
         ) {
             recalculateGroup(
-                    group.category(),
-                    group.benchmarkType()
+                    category,
+                    benchmarkType
             );
         }
     }
 
-    private record BenchmarkGroup(
-            String category,
-            String benchmarkType
-    ) {
+    @Transactional
+    public void recalculateAll() {
+        recalculateCategory(
+                "CPU"
+        );
+
+        recalculateCategory(
+                "GPU"
+        );
+
+        recalculateCategory(
+                "RAM"
+        );
+
+        recalculateCategory(
+                "SSD"
+        );
+
+        recalculateCategory(
+                "MOTHERBOARD"
+        );
+
+        recalculateCategory(
+                "POWER"
+        );
     }
 }

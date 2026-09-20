@@ -77,8 +77,7 @@ public class JwtAuthenticationFilter
                 return;
             }
 
-            String role =
-                    user.getRole();
+           String role = user.getRole().name();
 
             String authorityName =
                     role.startsWith("ROLE_")

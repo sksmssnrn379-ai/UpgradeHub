@@ -44,7 +44,7 @@ public class CompatibilityService {
                 );
 
         ProductSpec targetSpec = productSpecRepository
-                .findByProductId(targetProductId)
+                .findByProduct_Id(targetProductId)
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "검사할 상품의 상세 사양이 없습니다."
@@ -356,7 +356,7 @@ public class CompatibilityService {
     ) {
 
         return productSpecRepository
-                .findByProductId(product.getId())
+                .findByProduct_Id(product.getId())
                 .orElseThrow(() ->
                         new RuntimeException(
                                 partName

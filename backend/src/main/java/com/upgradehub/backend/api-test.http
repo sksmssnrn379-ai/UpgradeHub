@@ -1,5 +1,21 @@
-@baseUrl = https://emptyplace.duckdns.org
-@adminToken = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuZXd1c2VyQHRlc3QuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzg5ODA0OTAzLCJleHAiOjE3ODk4MDg1MDN9.kGT2FDkOFwHKugoC27oNATntJCop1iIQBb6eP0haI7s
+POST https://emptyplace.duckdns.org/products/10/spec
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuZXd1c2VyQHRlc3QuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzg5ODExNjc1LCJleHAiOjE3ODk4MTUyNzV9.SHQBMcCU-QN2dpK_DXrvuCewT7gB3v2G83yh0-bvEqY
+Content-Type: application/json
 
-PUT {{baseUrl}}/admin/products/68/active
-Authorization: Bearer {{adminToken}}
+{
+  "cpuSocket": "AM4",
+  "memoryType": "DDR4",
+  "powerConsumption": 65,
+  "recommendedPower": 500,
+  "powerCapacity": null,
+  "gpuInterface": null,
+  "storageInterface": null,
+  "widthMm": 40,
+  "depthMm": 40,
+  "heightMm": 6,
+  "weightG": 79,
+  "baseClockMhz": 3500,
+  "boostClockMhz": 4400,
+  "coreCount": 6,
+  "threadCount": 12
+}

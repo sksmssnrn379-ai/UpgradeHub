@@ -15,45 +15,85 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ProductSpecService {
 
-    private final ProductRepository productRepository;
-    private final ProductSpecRepository productSpecRepository;
+    private final ProductRepository
+            productRepository;
+
+    private final ProductSpecRepository
+            productSpecRepository;
 
     public ProductSpecResponse createSpec(
             Long productId,
             ProductSpecRequest request
     ) {
-        Product product = findProduct(productId);
+        Product product =
+                findProduct(productId);
 
-        if (productSpecRepository
-                .findByProductId(productId)
-                .isPresent()) {
-
+        if (
+                productSpecRepository
+                        .findByProduct_Id(
+                                productId
+                        )
+                        .isPresent()
+        ) {
             throw new RuntimeException(
                     "이미 등록된 상품 사양이 있습니다."
             );
         }
 
-        ProductSpec productSpec = ProductSpec.builder()
-                .product(product)
-                .cpuSocket(request.getCpuSocket())
-                .memoryType(request.getMemoryType())
-                .powerConsumption(
-                        request.getPowerConsumption()
-                )
-                .recommendedPower(
-                        request.getRecommendedPower()
-                )
-                .powerCapacity(
-                        request.getPowerCapacity()
-                )
-                .gpuInterface(request.getGpuInterface())
-                .storageInterface(
-                        request.getStorageInterface()
-                )
-                .build();
+        ProductSpec productSpec =
+                ProductSpec.builder()
+                        .product(product)
+                        .cpuSocket(
+                                request.getCpuSocket()
+                        )
+                        .memoryType(
+                                request.getMemoryType()
+                        )
+                        .powerConsumption(
+                                request.getPowerConsumption()
+                        )
+                        .recommendedPower(
+                                request.getRecommendedPower()
+                        )
+                        .powerCapacity(
+                                request.getPowerCapacity()
+                        )
+                        .gpuInterface(
+                                request.getGpuInterface()
+                        )
+                        .storageInterface(
+                                request.getStorageInterface()
+                        )
+                        .widthMm(
+                                request.getWidthMm()
+                        )
+                        .depthMm(
+                                request.getDepthMm()
+                        )
+                        .heightMm(
+                                request.getHeightMm()
+                        )
+                        .weightG(
+                                request.getWeightG()
+                        )
+                        .baseClockMhz(
+                                request.getBaseClockMhz()
+                        )
+                        .boostClockMhz(
+                                request.getBoostClockMhz()
+                        )
+                        .coreCount(
+                                request.getCoreCount()
+                        )
+                        .threadCount(
+                                request.getThreadCount()
+                        )
+                        .build();
 
         ProductSpec savedSpec =
-                productSpecRepository.save(productSpec);
+                productSpecRepository.save(
+                        productSpec
+                );
 
         return toResponse(savedSpec);
     }
@@ -63,7 +103,9 @@ public class ProductSpecService {
             Long productId
     ) {
         ProductSpec productSpec =
-                findProductSpec(productId);
+                findProductSpec(
+                        productId
+                );
 
         return toResponse(productSpec);
     }
@@ -73,7 +115,9 @@ public class ProductSpecService {
             ProductSpecRequest request
     ) {
         ProductSpec productSpec =
-                findProductSpec(productId);
+                findProductSpec(
+                        productId
+                );
 
         productSpec.setCpuSocket(
                 request.getCpuSocket()
@@ -103,8 +147,42 @@ public class ProductSpecService {
                 request.getStorageInterface()
         );
 
+        productSpec.setWidthMm(
+                request.getWidthMm()
+        );
+
+        productSpec.setDepthMm(
+                request.getDepthMm()
+        );
+
+        productSpec.setHeightMm(
+                request.getHeightMm()
+        );
+
+        productSpec.setWeightG(
+                request.getWeightG()
+        );
+
+        productSpec.setBaseClockMhz(
+                request.getBaseClockMhz()
+        );
+
+        productSpec.setBoostClockMhz(
+                request.getBoostClockMhz()
+        );
+
+        productSpec.setCoreCount(
+                request.getCoreCount()
+        );
+
+        productSpec.setThreadCount(
+                request.getThreadCount()
+        );
+
         ProductSpec updatedSpec =
-                productSpecRepository.save(productSpec);
+                productSpecRepository.save(
+                        productSpec
+                );
 
         return toResponse(updatedSpec);
     }
@@ -112,7 +190,8 @@ public class ProductSpecService {
     private Product findProduct(
             Long productId
     ) {
-        return productRepository.findById(productId)
+        return productRepository
+                .findById(productId)
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "상품을 찾을 수 없습니다."
@@ -124,7 +203,9 @@ public class ProductSpecService {
             Long productId
     ) {
         return productSpecRepository
-                .findByProductId(productId)
+                .findByProduct_Id(
+                        productId
+                )
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "상품 사양을 찾을 수 없습니다."
@@ -135,26 +216,82 @@ public class ProductSpecService {
     private ProductSpecResponse toResponse(
             ProductSpec productSpec
     ) {
-        Product product = productSpec.getProduct();
+        Product product =
+                productSpec.getProduct();
 
-        return new ProductSpecResponse(
-        productSpec.getId(),
-        product.getId(),
-        product.getName(),
-        product.getCategory(),
-        productSpec.getCpuSocket(),
-        productSpec.getMemoryType(),
-        productSpec.getPowerConsumption(),
-        productSpec.getRecommendedPower(),
-        productSpec.getPowerCapacity(),
-        productSpec.getGpuInterface(),
-        productSpec.getStorageInterface(),
-
-        product.getPerformanceScore(),
-        product.getBenchmarkScore(),
-        product.getBenchmarkType(),
-        product.getBenchmarkSource(),
-        product.getBenchmarkUpdatedAt()
-);
+        return ProductSpecResponse.builder()
+                .specId(
+        productSpec.getId()
+)
+                .productId(
+                        product.getId()
+                )
+                .productName(
+                        product.getName()
+                )
+                .category(
+                        product.getCategory()
+                )
+                .cpuSocket(
+                        productSpec.getCpuSocket()
+                )
+                .memoryType(
+                        productSpec.getMemoryType()
+                )
+                .powerConsumption(
+                        productSpec.getPowerConsumption()
+                )
+                .recommendedPower(
+                        productSpec.getRecommendedPower()
+                )
+                .powerCapacity(
+                        productSpec.getPowerCapacity()
+                )
+                .gpuInterface(
+                        productSpec.getGpuInterface()
+                )
+                .storageInterface(
+                        productSpec.getStorageInterface()
+                )
+                .widthMm(
+                        productSpec.getWidthMm()
+                )
+                .depthMm(
+                        productSpec.getDepthMm()
+                )
+                .heightMm(
+                        productSpec.getHeightMm()
+                )
+                .weightG(
+                        productSpec.getWeightG()
+                )
+                .baseClockMhz(
+                        productSpec.getBaseClockMhz()
+                )
+                .boostClockMhz(
+                        productSpec.getBoostClockMhz()
+                )
+                .coreCount(
+                        productSpec.getCoreCount()
+                )
+                .threadCount(
+                        productSpec.getThreadCount()
+                )
+                .performanceScore(
+                        product.getPerformanceScore()
+                )
+                .benchmarkScore(
+                        product.getBenchmarkScore()
+                )
+                .benchmarkType(
+                        product.getBenchmarkType()
+                )
+                .benchmarkSource(
+                        product.getBenchmarkSource()
+                )
+                .benchmarkUpdatedAt(
+                        product.getBenchmarkUpdatedAt()
+                )
+                .build();
     }
 }

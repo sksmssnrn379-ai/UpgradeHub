@@ -14,6 +14,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.math.BigDecimal;
 
 @Entity
 @Getter
@@ -56,4 +57,52 @@ public class ProductSpec {
 
     @Column(name = "storage_interface")
     private String storageInterface;
+
+    @Column(
+        name = "width_mm",
+        precision = 10,
+        scale = 2
+    )
+    private BigDecimal widthMm;
+
+    @Column(
+            name = "depth_mm",
+            precision = 10,
+            scale = 2
+    )
+    private BigDecimal depthMm;
+
+    @Column(
+            name = "height_mm",
+            precision = 10,
+            scale = 2
+    )
+    private BigDecimal heightMm;
+
+    @Column(
+            name = "weight_g",
+            precision = 10,
+            scale = 2
+    )
+    private BigDecimal weightG;
+
+    @Column(
+            name = "base_clock_mhz"
+    )
+    private Integer baseClockMhz;
+
+    @Column(
+            name = "boost_clock_mhz"
+    )
+    private Integer boostClockMhz;
+
+    @Column(
+            name = "core_count"
+    )
+    private Integer coreCount;
+
+    @Column(
+            name = "thread_count"
+    )
+    private Integer threadCount;
 }

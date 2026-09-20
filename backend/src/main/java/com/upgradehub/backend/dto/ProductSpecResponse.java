@@ -3,8 +3,15 @@ package com.upgradehub.backend.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import java.time.LocalDate;
-
+import java.math.BigDecimal;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 @Getter
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class ProductSpecResponse {
 
@@ -24,4 +31,19 @@ public class ProductSpecResponse {
     private String benchmarkType;
     private String benchmarkSource;
     private LocalDate benchmarkUpdatedAt;
+    private BigDecimal widthMm;
+
+    private BigDecimal depthMm;
+
+    private BigDecimal heightMm;
+
+    private BigDecimal weightG;
+
+    private Integer baseClockMhz;
+
+    private Integer boostClockMhz;
+
+    private Integer coreCount;
+
+    private Integer threadCount;
 }

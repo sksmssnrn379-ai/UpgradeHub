@@ -155,7 +155,7 @@ UserAddress address =
         order.getStatus().name(),
         order.getTotalPrice(),
         order.getOrderedAt(),
-        items,
+        itemResponses,
         order.getRecipientName(),
         order.getRecipientPhone(),
         order.getPostalCode(),

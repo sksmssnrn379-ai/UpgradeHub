@@ -15,4 +15,13 @@ public class OrderResponse {
     private Long totalPrice;
     private LocalDateTime orderedAt;
     private List<OrderItemResponse> items;
+    private String recipientName;
+
+private String recipientPhone;
+
+private String postalCode;
+
+private String roadAddress;
+
+private String detailAddress;
 }

@@ -151,12 +151,17 @@ UserAddress address =
         );
 
         return new OrderResponse(
-                savedOrder.getId(),
-                savedOrder.getStatus().name(),
-                savedOrder.getTotalPrice(),
-                savedOrder.getOrderedAt(),
-                itemResponses
-        );
+        order.getId(),
+        order.getStatus().name(),
+        order.getTotalPrice(),
+        order.getOrderedAt(),
+        items,
+        order.getRecipientName(),
+        order.getRecipientPhone(),
+        order.getPostalCode(),
+        order.getRoadAddress(),
+        order.getDetailAddress()
+);
     }
 
     @Transactional(readOnly = true)
@@ -205,12 +210,17 @@ UserAddress address =
                         .toList();
 
         return new OrderResponse(
-                order.getId(),
-                order.getStatus().name(),
-                order.getTotalPrice(),
-                order.getOrderedAt(),
-                items
-        );
+        order.getId(),
+        order.getStatus().name(),
+        order.getTotalPrice(),
+        order.getOrderedAt(),
+        items,
+        order.getRecipientName(),
+        order.getRecipientPhone(),
+        order.getPostalCode(),
+        order.getRoadAddress(),
+        order.getDetailAddress()
+);
     }
 
     private OrderItemResponse toItemResponse(
@@ -361,6 +371,13 @@ UserAddress address =
         .detailAddress(
                 address.getDetailAddress()
         )
+        .recipientName(
+        order.getRecipientName()
+)
+.recipientPhone(
+        order.getRecipientPhone()
+)
+
         .build();
 
     Order savedOrder =

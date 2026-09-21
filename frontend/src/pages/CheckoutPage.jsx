@@ -59,48 +59,50 @@ const [
 
     try {
       const addressResponse =
-        await api.get("/addresses");
+  await api.get("/addresses");
 
-      if (!active) {
-        return;
-      }
+if (!active) {
+  return;
+}
 
-      const addressData =
-        Array.isArray(
-          addressResponse.data
-        )
-          ? addressResponse.data
-          : [];
+const addressData =
+  Array.isArray(addressResponse.data)
+    ? addressResponse.data
+    : [];
 
-      setAddresses(addressData);
+setAddresses(addressData);
 
-      const defaultAddress =
-        addressData.find(
-          (address) =>
-            address.defaultAddress
-        ) || addressData[0];
+const defaultAddress =
+  addressData.find(
+    (address) =>
+      address.defaultAddress === true
+  ) || addressData[0];
 
-      if (!defaultAddress) {
-        setMessage(
-          "결제를 진행하려면 배송지를 먼저 등록해 주세요."
-        );
+if (!defaultAddress) {
+  setMessage(
+    "결제를 진행하려면 배송지를 먼저 등록해 주세요."
+  );
 
-        setLoadingAddresses(false);
-        return;
-      }
+  return;
+}
 
-      setSelectedAddressId(
-        String(defaultAddress.id)
-      );
+const addressId =
+  Number(defaultAddress.id);
 
-      const response =
+setSelectedAddressId(
+  String(addressId)
+);
+
+console.log(
+  "결제 준비에 사용할 주소:",
+  addressId
+);
+
+const response =
   await api.post(
     "/payments/prepare",
     {
-      addressId:
-        Number(
-          selectedAddressId
-        ),
+      addressId,
     }
   );
 

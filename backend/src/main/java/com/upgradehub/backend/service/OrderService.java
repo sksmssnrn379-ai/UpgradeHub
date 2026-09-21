@@ -40,7 +40,10 @@ public class OrderService {
     private final UserRepository userRepository;
         private final UserAddressRepository
         userAddressRepository;
-    public OrderResponse createOrder(String email) {
+    public OrderResponse createOrder(
+        String email,
+        Long addressId
+) {
 
         User user = userRepository
         .findByEmail(email)

@@ -29,7 +29,7 @@ public class OrderController {
     ) {
         String email = principal.getName();
 
-        return orderService.createOrder(email);
+        return orderService.createOrder(email, addressId);
     }
 
     // 로그인 사용자의 전체 주문 조회

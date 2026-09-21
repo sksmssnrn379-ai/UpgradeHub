@@ -8,28 +8,34 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestParam;
+
 import java.security.Principal;
 import java.util.List;
 
 @RestController
 @RequestMapping("/orders")
 @RequiredArgsConstructor
-@PostMapping
-@ResponseStatus(HttpStatus.CREATED)
-public OrderResponse createOrder(
-        @RequestParam Long addressId,
-        Principal principal
-) {
-    String email = principal.getName();
+public class OrderController {
 
-    return orderService.createOrder(
-            email,
-            addressId
-    );
-}
+    private final OrderService orderService;
+
+    // 장바구니 상품으로 주문 생성
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public OrderResponse createOrder(
+            @RequestParam Long addressId,
+            Principal principal
+    ) {
+        String email = principal.getName();
+
+        return orderService.createOrder(
+                email,
+                addressId
+        );
+    }
 
     // 로그인 사용자의 전체 주문 조회
     @GetMapping

@@ -278,6 +278,18 @@ UserAddress address =
                     )
             );
 
+    UserAddress address =
+            userAddressRepository
+                    .findByIdAndUserId(
+                            addressId,
+                            user.getId()
+                    )
+                    .orElseThrow(() ->
+                            new RuntimeException(
+                                    "선택한 배송지를 찾을 수 없습니다."
+                            )
+                    );
+
     Cart cart = cartRepository
             .findByUserEmail(email)
             .orElseThrow(() ->
@@ -285,6 +297,7 @@ UserAddress address =
                             "장바구니를 찾을 수 없습니다."
                     )
             );
+            
 
     List<CartItem> cartItems =
             cartItemRepository.findByCartId(

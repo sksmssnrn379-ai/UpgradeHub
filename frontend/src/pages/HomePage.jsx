@@ -233,7 +233,7 @@ export default function HomePage() {
         <section className="mx-auto max-w-7xl p-6">
           <div className="flex items-center justify-between rounded-xl border border-green-500 bg-slate-900 p-6">
             <div>
-              <h2 className="text-3xl font-bold text-white text-green-400">
+              <h2 className="text-3xl font-bold text-white">
                 AI Advisor
               </h2>
 

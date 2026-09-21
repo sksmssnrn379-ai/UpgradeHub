@@ -207,6 +207,9 @@ public class SecurityConfig {
                         )
                         .hasRole("ADMIN")
 
+                        .requestMatchers("/addresses/**")
+                        .authenticated()
+
                         // 나머지 요청
                         .anyRequest()
                         .permitAll()

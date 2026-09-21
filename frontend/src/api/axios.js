@@ -1,16 +1,13 @@
+
 import axios from "axios";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 api.interceptors.request.use(
   (config) => {
-    const token =
-      localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
     if (token) {
       config.headers.Authorization =
@@ -27,20 +24,11 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const status =
-      error.response?.status;
+    const status = error.response?.status;
 
-    if (
-      status === 401 ||
-      status === 403
-    ) {
-      localStorage.removeItem(
-        "token"
-      );
-
-      localStorage.removeItem(
-        "role"
-      );
+    if (status === 401 || status === 403) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
     }
 
     return Promise.reject(error);
@@ -48,3 +36,4 @@ api.interceptors.response.use(
 );
 
 export default api;
+

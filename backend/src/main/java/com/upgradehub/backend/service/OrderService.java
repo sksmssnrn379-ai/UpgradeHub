@@ -42,10 +42,23 @@ public class OrderService {
         userAddressRepository;
     public OrderResponse createOrder(String email) {
 
-        User user = userRepository.findByEmail(email)
+        User user = userRepository
+        .findByEmail(email)
+        .orElseThrow(() ->
+                new RuntimeException(
+                        "사용자를 찾을 수 없습니다."
+                )
+        );
+
+UserAddress address =
+        userAddressRepository
+                .findByIdAndUserId(
+                        addressId,
+                        user.getId()
+                )
                 .orElseThrow(() ->
                         new RuntimeException(
-                                "사용자를 찾을 수 없습니다."
+                                "선택한 배송지를 찾을 수 없습니다."
                         )
                 );
 

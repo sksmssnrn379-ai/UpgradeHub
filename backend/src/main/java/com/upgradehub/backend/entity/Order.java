@@ -97,4 +97,33 @@ public class Order {
                     OrderStatus.ORDERED;
         }
     }
+    @Column(
+        name = "recipient_name",
+        length = 50
+)
+private String recipientName;
+
+@Column(
+        name = "recipient_phone",
+        length = 20
+)
+private String recipientPhone;
+
+@Column(
+        name = "postal_code",
+        length = 10
+)
+private String postalCode;
+
+@Column(
+        name = "road_address",
+        length = 255
+)
+private String roadAddress;
+
+@Column(
+        name = "detail_address",
+        length = 255
+)
+private String detailAddress;
 }

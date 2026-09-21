@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.upgradehub.backend.dto.PaymentPrepareRequest;
 import java.util.Map;
 
 @RestController
@@ -23,17 +23,20 @@ public class PaymentController {
     private final OrderService orderService;
     private final PaymentService paymentService;
 
-    @PostMapping("/prepare")
-    public ResponseEntity<PaymentPrepareResponse>
-    preparePayment(
-            Authentication authentication
-    ) {
-        return ResponseEntity.ok(
-                orderService.preparePayment(
-                        authentication.getName()
-                )
-        );
-    }
+   @PostMapping("/prepare")
+public ResponseEntity<PaymentPrepareResponse>
+preparePayment(
+        Authentication authentication,
+        @Valid @RequestBody
+        PaymentPrepareRequest request
+) {
+    return ResponseEntity.ok(
+            orderService.preparePayment(
+                    authentication.getName(),
+                    request.getAddressId()
+            )
+    );
+}
 
     @PostMapping("/confirm")
     public ResponseEntity<Map<String, Object>>

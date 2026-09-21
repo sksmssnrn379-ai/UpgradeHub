@@ -20,7 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.upgradehub.backend.entity.PurchasedPart;
 import com.upgradehub.backend.repository.PurchasedPartRepository;
 import com.upgradehub.backend.dto.PaymentPrepareResponse;
-
+import com.upgradehub.backend.entity.UserAddress;
+import com.upgradehub.backend.repository.UserAddressRepository;
 import java.util.UUID;
 import java.time.LocalDateTime;
 
@@ -37,7 +38,8 @@ public class OrderService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final UserRepository userRepository;
-
+        private final UserAddressRepository
+        userAddressRepository;
     public OrderResponse createOrder(String email) {
 
         User user = userRepository.findByEmail(email)
@@ -249,7 +251,8 @@ public class OrderService {
         );
         }
         public PaymentPrepareResponse preparePayment(
-        String email
+        String email,
+        Long addressId
 ) {
     User user = userRepository
             .findByEmail(email)
@@ -306,15 +309,30 @@ public class OrderService {
                             .replace("-", "");
 
     Order order = Order.builder()
-            .user(user)
-            .totalPrice(totalPrice)
-            .status(
-                    OrderStatus.PAYMENT_PENDING
-            )
-            .paymentOrderId(
-                    paymentOrderId
-            )
-            .build();
+        .user(user)
+        .totalPrice(totalPrice)
+        .status(
+                OrderStatus.PAYMENT_PENDING
+        )
+        .paymentOrderId(
+                paymentOrderId
+        )
+        .recipientName(
+                address.getRecipientName()
+        )
+        .recipientPhone(
+                address.getPhone()
+        )
+        .postalCode(
+                address.getPostalCode()
+        )
+        .roadAddress(
+                address.getRoadAddress()
+        )
+        .detailAddress(
+                address.getDetailAddress()
+        )
+        .build();
 
     Order savedOrder =
             orderRepository.save(order);

@@ -293,7 +293,7 @@ function AdvisorPage() {
                 PERSONALIZED RECOMMENDATION
               </p>
 
-              <h1 className="text-4xl font-black md:text-5xl">
+              <h1 className="text-4xl font-white md:text-5xl">
                 AI Advisor
               </h1>
 
@@ -315,7 +315,7 @@ function AdvisorPage() {
 
         <div className="grid items-start gap-6 lg:grid-cols-[420px_1fr]">
           <section className="rounded-2xl border border-slate-800 bg-slate-900 p-7">
-            <h2 className="text-2xl font-black">
+            <h2 className="text-2xl font-white">
               구매 조건 입력
             </h2>
 
@@ -483,7 +483,7 @@ function AdvisorPage() {
                   />
                 </div>
 
-                <h2 className="mt-6 text-2xl font-black">
+                <h2 className="mt-6 text-2xl font-white">
                   분석 조건을 입력해 주세요.
                 </h2>
 
@@ -527,7 +527,7 @@ function AdvisorPage() {
                       ANALYSIS RESULT
                     </p>
 
-                    <h2 className="mt-1 text-3xl font-black">
+                    <h2 className="mt-1 text-3xl font-white">
                       구매 판단 결과
                     </h2>
                   </div>

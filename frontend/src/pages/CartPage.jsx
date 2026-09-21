@@ -132,8 +132,8 @@ export default function CartPage() {
 
         <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <p className="text-cyan-400 text-sm font-bold tracking-widest mb-2">YOUR BUILD</p>
-            <h1 className="text-4xl md:text-5xl font-black">SHOPPING CART</h1>
+            <p className="text-cyan-400 text-lg font-bold tracking-widest mb-2">YOUR BUILD</p>
+            <h1 className="text-4xl md:text-5xl font-white">SHOPPING CART</h1>
             <p className="text-slate-400 mt-2">선택한 PC 부품을 확인하고 주문을 진행하세요.</p>
           </div>
           {!loading && cart.items.length > 0 && (
@@ -153,7 +153,7 @@ export default function CartPage() {
             <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-2xl bg-slate-800">
               <PackageOpen size={42} className="text-cyan-400" />
             </div>
-            <h2 className="text-2xl font-bold">장바구니가 비어 있습니다.</h2>
+            <h2 className="text-2xl font-bold text-white">장바구니가 비어 있습니다.</h2>
             <p className="mt-2 text-slate-400">원하는 PC 부품을 장바구니에 담아보세요.</p>
             <button onClick={() => navigate("/products")} className="mt-7 rounded-lg bg-cyan-500 px-7 py-3 font-bold text-slate-950 hover:bg-cyan-400 transition">상품 보러 가기</button>
           </section>
@@ -173,7 +173,7 @@ export default function CartPage() {
                 </div>
                   <div className="min-w-0 flex-1">
                     <span className="text-xs font-bold uppercase tracking-wider text-green-400">{item.brand}</span>
-                    <h2 className="mt-1 break-words text-xl font-bold">{item.productName}</h2>
+                    <h2 className="mt-1 break-words text-xl font-white">{item.productName}</h2>
                     <p className="mt-2 text-sm text-slate-400">개당 {formatPrice(item.price)}원</p>
                   </div>
                  <div className="flex min-w-0 flex-wrap items-center justify-between gap-4 md:col-start-2 xl:col-start-auto xl:flex-nowrap xl:justify-end">
@@ -201,7 +201,7 @@ export default function CartPage() {
                 <span className="font-semibold">총 주문 금액</span>
                 <strong className="whitespace-nowrap text-2xl text-cyan-400">{formatPrice(cart.totalPrice)}원</strong>
               </div>
-              <button disabled={ordering} onClick={createOrder} className="w-full rounded-lg bg-cyan-500 py-3.5 font-black text-slate-950 flex items-center justify-center gap-2 hover:bg-cyan-400 disabled:opacity-50 transition">
+              <button disabled={ordering} onClick={createOrder} className="w-full rounded-lg bg-cyan-500 py-3.5 font-white text-slate-950 flex items-center justify-center gap-2 hover:bg-cyan-400 disabled:opacity-50 transition">
                 <CreditCard size={19} /> {ordering ? "주문 처리 중..." : "주문하기"}
               </button>
               <button onClick={clearCart} className="mt-3 w-full rounded-lg border border-slate-700 py-3 text-sm text-slate-400 hover:border-red-500/50 hover:text-red-400 transition">장바구니 비우기</button>

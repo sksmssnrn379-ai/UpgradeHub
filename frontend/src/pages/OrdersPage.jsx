@@ -382,7 +382,7 @@ function OrdersPage() {
                 ORDER HISTORY
               </p>
 
-              <h1 className="text-4xl font-black md:text-5xl">
+              <h1 className="text-4xl font-white md:text-5xl">
                 주문 내역
               </h1>
 
@@ -423,7 +423,7 @@ function OrdersPage() {
                       전체 주문
                     </p>
 
-                    <p className="mt-2 text-3xl font-black">
+                    <p className="mt-2 text-3xl font-white">
                       {orders.length}
                     </p>
                   </div>
@@ -442,7 +442,7 @@ function OrdersPage() {
                       결제 완료
                     </p>
 
-                    <p className="mt-2 text-3xl font-black">
+                    <p className="mt-2 text-3xl font-white">
                       {paidOrderCount}
                     </p>
                   </div>
@@ -461,7 +461,7 @@ function OrdersPage() {
                       결제 대기
                     </p>
 
-                    <p className="mt-2 text-3xl font-black">
+                    <p className="mt-2 text-3xl font-white">
                       {pendingOrderCount}
                     </p>
                   </div>
@@ -480,7 +480,7 @@ function OrdersPage() {
                       결제 완료 금액
                     </p>
 
-                    <p className="mt-2 text-xl font-black text-cyan-400">
+                    <p className="mt-2 text-xl font-white text-cyan-400">
                       {formatPrice(paidTotal)}
                     </p>
                   </div>
@@ -604,7 +604,7 @@ function OrdersPage() {
 
               <Link
                 to="/products"
-                className="mt-7 inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-6 py-3 font-black text-slate-950 transition hover:bg-cyan-400"
+                className="mt-7 inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-6 py-3 font-white text-slate-950 transition hover:bg-cyan-400"
               >
                 <ShoppingCart size={18} />
                 상품 둘러보기
@@ -693,7 +693,7 @@ function OrdersPage() {
 
                         <div>
                           <div className="flex flex-wrap items-center gap-3">
-                            <h2 className="text-xl font-black">
+                            <h2 className="text-xl font-white">
                               주문번호{" "}
                               {order.orderId}
                             </h2>
@@ -725,7 +725,7 @@ function OrdersPage() {
                             상품 {itemCount}개
                           </p>
 
-                          <p className="mt-1 text-xl font-black text-cyan-400">
+                          <p className="mt-1 text-xl font-white text-cyan-400">
                             {formatPrice(
                               order.totalPrice
                             )}
@@ -827,7 +827,7 @@ function OrdersPage() {
                                     상품 합계
                                   </p>
 
-                                  <p className="mt-1 text-lg font-black text-cyan-400">
+                                  <p className="mt-1 text-lg font-white text-cyan-400">
                                     {formatPrice(
                                       item.subtotal
                                     )}
@@ -854,7 +854,7 @@ function OrdersPage() {
                               총 주문 금액
                             </p>
 
-                            <p className="mt-1 text-2xl font-black text-cyan-400">
+                            <p className="mt-1 text-2xl font-white text-cyan-400">
                               {formatPrice(
                                 order.totalPrice
                               )}

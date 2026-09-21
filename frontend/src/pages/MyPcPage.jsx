@@ -249,7 +249,7 @@ export default function MyPcPage() {
                 CURRENT PC CONFIGURATION
               </p>
 
-              <h1 className="text-4xl font-black">
+              <h1 className="text-4xl font-white">
                 MY PC
               </h1>
 
@@ -266,7 +266,7 @@ export default function MyPcPage() {
                   등록된 부품
                 </p>
 
-                <p className="mt-1 text-3xl font-black text-cyan-400">
+                <p className="mt-1 text-3xl font-white text-cyan-400">
                   {getInstalledPartCount()}
                   <span className="ml-1 text-base text-slate-400">
                     / {partDefinitions.length}

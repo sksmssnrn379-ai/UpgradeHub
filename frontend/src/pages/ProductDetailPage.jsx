@@ -646,7 +646,7 @@ function ProductDetailPage() {
                 {product.brand}
               </p>
 
-              <h2 className="mt-2 text-3xl font-black">
+              <h2 className="mt-2 text-3xl font-white">
                 {product.name}
               </h2>
 

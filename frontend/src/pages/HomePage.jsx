@@ -245,7 +245,7 @@ export default function HomePage() {
 
             <Link
               to="/advisor"
-              className="rounded-lg bg-green-500 px-6 py-3 font-bold text-black transition hover:bg-green-400"
+              className="rounded-lg bg-green-500 px-6 py-3 font-bold text-white transition hover:bg-green-400"
             >
               추천 받기
             </Link>

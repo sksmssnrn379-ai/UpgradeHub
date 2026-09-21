@@ -323,7 +323,7 @@ function ProductsPage() {
 
           <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
             <div>
-              <h1 className="text-4xl font-black md:text-5xl">
+              <h1 className="text-4xl font-white md:text-5xl">
                 PC 부품 상품
               </h1>
 

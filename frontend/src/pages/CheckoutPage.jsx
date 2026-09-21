@@ -190,7 +190,7 @@ function CheckoutPage() {
           SECURE CHECKOUT
         </p>
 
-        <h1 className="mt-2 text-4xl font-black">
+        <h1 className="mt-2 text-4xl font-white">
           결제하기
         </h1>
 

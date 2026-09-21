@@ -347,38 +347,18 @@ UserAddress address =
                             .toString()
                             .replace("-", "");
 
-    Order order = Order.builder()
+Order order = Order.builder()
         .user(user)
         .totalPrice(totalPrice)
-        .status(
-                OrderStatus.PAYMENT_PENDING
-        )
-        .paymentOrderId(
-                paymentOrderId
-        )
-        .recipientName(
-                address.getRecipientName()
-        )
-        .recipientPhone(
-                address.getPhone()
-        )
-        .postalCode(
-                address.getPostalCode()
-        )
-        .roadAddress(
-                address.getRoadAddress()
-        )
-        .detailAddress(
-                address.getDetailAddress()
-        )
-        .recipientName(
-        order.getRecipientName()
-)
-.recipientPhone(
-        order.getRecipientPhone()
-)
-
+        .status(OrderStatus.PAYMENT_PENDING)
+        .paymentOrderId(paymentOrderId)
+        .recipientName(address.getRecipientName())
+        .recipientPhone(address.getPhone())
+        .postalCode(address.getPostalCode())
+        .roadAddress(address.getRoadAddress())
+        .detailAddress(address.getDetailAddress())
         .build();
+        
 
     Order savedOrder =
             orderRepository.save(order);

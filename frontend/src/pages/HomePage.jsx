@@ -176,7 +176,7 @@ export default function HomePage() {
         <section className="mx-auto max-w-7xl p-6">
           <div className="flex flex-col items-center justify-between gap-8 rounded-xl bg-gradient-to-r from-slate-900 to-cyan-950 p-10 md:flex-row">
             <div>
-              <h1 className="mb-4 text-5xl font-black">
+              <h1 className="mb-4 text-5xl font-bold text-white">
                 AI-POWERED
                 <br />
                 PC UPGRADES
@@ -233,7 +233,7 @@ export default function HomePage() {
         <section className="mx-auto max-w-7xl p-6">
           <div className="flex items-center justify-between rounded-xl border border-green-500 bg-slate-900 p-6">
             <div>
-              <h2 className="text-3xl font-bold text-green-400">
+              <h2 className="text-3xl font-bold text-white text-green-400">
                 AI Advisor
               </h2>
 

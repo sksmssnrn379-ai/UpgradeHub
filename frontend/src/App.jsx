@@ -16,7 +16,7 @@ import MyPcPage from "./pages/MyPcPage.jsx";
 import ComparePage from "./pages/ComparePage.jsx";
 import AdvisorPage from "./pages/AdvisorPage.jsx";
 import PurchasedPartsPage from "./pages/PurchasedPartsPage.jsx";
-
+import AddressPage from "./pages/AddressPage.jsx";
 import OrdersPage from "./pages/OrdersPage.jsx";
 
 import CheckoutPage from "./pages/CheckoutPage.jsx";
@@ -194,7 +194,14 @@ function App() {
           <Navigate to="/home" replace />
         }
       />
-
+      <Route
+  path="/addresses"
+  element={
+    <ProtectedRoute>
+      <AddressPage />
+    </ProtectedRoute>
+  }
+/>
     </Routes>
   );
 }

@@ -6,6 +6,7 @@ import {
   ChevronUp,
   Clock3,
   Cpu,
+  MapPin,
   Package,
   Receipt,
   RefreshCw,
@@ -837,6 +838,57 @@ function OrdersPage() {
                             )
                           )}
                         </div>
+                        <section className="mt-5 rounded-xl border border-slate-800 bg-slate-950 p-5">
+  <div className="flex items-center gap-2">
+    <MapPin
+      size={19}
+      className="text-cyan-400"
+    />
+
+    <h3 className="font-bold">
+      배송지 정보
+    </h3>
+  </div>
+
+  {order.roadAddress ? (
+    <>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <div>
+          <p className="text-sm text-slate-500">
+            받는 사람
+          </p>
+
+          <p className="mt-1 font-bold">
+            {order.recipientName}
+          </p>
+        </div>
+
+        <div>
+          <p className="text-sm text-slate-500">
+            연락처
+          </p>
+
+          <p className="mt-1 font-bold">
+            {order.recipientPhone}
+          </p>
+        </div>
+      </div>
+
+      <p className="mt-4 border-t border-slate-800 pt-4 leading-7 text-slate-200">
+        [{order.postalCode}]{" "}
+        {order.roadAddress}
+        {order.detailAddress
+          ? ` ${order.detailAddress}`
+          : ""}
+      </p>
+    </>
+  ) : (
+    <p className="mt-4 text-sm text-slate-500">
+      주소 기능 추가 이전에 생성된 주문으로
+      배송지 정보가 없습니다.
+    </p>
+  )}
+</section>
 
                         <div className="mt-5 flex flex-col justify-between gap-4 rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 sm:flex-row sm:items-center">
                           <div>

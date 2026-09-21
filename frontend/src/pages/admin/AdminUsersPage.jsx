@@ -584,7 +584,7 @@ function AdminUsersPage() {
                         )}
                       </span>
 
-                      <span className="text-xs text-slate-600">
+                      <span className="text-xs text-slate-600 text-white">
                         ID {user.id}
                       </span>
                     </div>

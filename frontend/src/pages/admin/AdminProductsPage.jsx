@@ -509,7 +509,7 @@ function AdminProductsPage() {
 
         <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-3xl font-black">
+            <h1 className="text-3xl font-white">
               상품 관리
             </h1>
 
@@ -707,7 +707,7 @@ function AdminProductsPage() {
                       </span>
                     </div>
 
-                    <h2 className="mt-3 break-words text-xl font-bold">
+                    <h2 className="mt-3 break-words text-xl font-bold text-white">
                       {product.name}
                     </h2>
 

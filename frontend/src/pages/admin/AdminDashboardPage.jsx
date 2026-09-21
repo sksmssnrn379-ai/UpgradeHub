@@ -39,7 +39,7 @@ function AdminDashboardPage() {
             className="text-cyan-400"
           />
 
-          <h2 className="mt-5 text-xl font-bold">
+          <h2 className="mt-5 text-xl font-bold text-white">
             상품 관리
           </h2>
 

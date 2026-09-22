@@ -264,6 +264,7 @@ function ProductsPage() {
             >
               PRODUCTS
             </Link>
+            
 
             <Link
               to="/mypc"
@@ -285,7 +286,12 @@ function ProductsPage() {
             >
               AI ADVISOR
             </Link>
-
+            <Link
+  to="/addresses"
+  className="transition hover:text-cyan-400"
+>
+  ADDRESSES
+</Link>
             <button
               type="button"
               onClick={handleCart}

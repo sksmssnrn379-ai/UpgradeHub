@@ -201,7 +201,12 @@ export default function MyPcPage() {
             >
               AI ADVISOR
             </Link>
-
+            <Link
+  to="/addresses"
+  className="transition hover:text-cyan-400"
+>
+  ADDRESSES
+</Link>
             <Link
               to="/cart"
               className="flex items-center gap-2 transition hover:text-cyan-400"

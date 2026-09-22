@@ -111,16 +111,63 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-slate-950 text-white">
-      <header className="border-b border-slate-800 bg-slate-900">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <button onClick={() => navigate("/")} className="text-2xl font-bold text-cyan-400">
+      <Link
+            to="/home"
+            className="flex items-center gap-2 text-2xl font-bold text-cyan-400"
+          >
+            <Cpu size={27} />
             UpgradeHub
-          </button>
-          <nav className="hidden md:flex gap-8 text-sm font-medium text-slate-300">
-            <button onClick={() => navigate("/products")} className="hover:text-cyan-400 transition">PRODUCTS</button>
-            <button onClick={() => navigate("/mypc")} className="hover:text-cyan-400 transition">MY PC</button>
-            <button onClick={() => navigate("/orders")} className="hover:text-cyan-400 transition">ORDERS</button>
-            <span className="text-cyan-400">CART</span>
+          </Link>
+
+          <nav className="flex flex-wrap items-center gap-5 text-sm">
+            <Link
+              to="/products"
+              className="transition hover:text-cyan-400"
+            >
+              PRODUCTS
+            </Link>
+
+            <Link
+              to="/mypc"
+              className="transition hover:text-cyan-400"
+            >
+              MY PC
+            </Link>
+
+            <Link
+              to="/orders"
+              className="transition hover:text-cyan-400"
+            >
+              ORDERS
+            </Link>
+
+            <Link
+              to="/advisor"
+              className="font-bold text-green-400"
+            >
+              AI ADVISOR
+            </Link>
+            <Link
+  to="/addresses"
+  className="transition hover:text-cyan-400"
+>
+  ADDRESSES
+</Link>
+            <Link
+              to="/cart"
+              className="flex items-center gap-2 transition hover:text-cyan-400"
+            >
+              <ShoppingCart size={18} />
+              CART
+            </Link>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="transition hover:text-red-400"
+            >
+              LOGOUT
+            </button>
           </nav>
         </div>
       </header>

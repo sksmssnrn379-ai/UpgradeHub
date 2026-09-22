@@ -1,14 +1,19 @@
 import {
   ArrowLeft,
   CheckCircle2,
+  Clock3,
   Cpu,
   LockKeyhole,
   Mail,
+  ShieldCheck,
   User,
   UserPlus,
 } from "lucide-react";
 
-import { useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 
 import {
   Link,
@@ -34,37 +39,277 @@ function SignupPage() {
 
   const [loading, setLoading] =
     useState(false);
+  const [
+  verificationCode,
+  setVerificationCode,
+] = useState("");
 
-  async function handleSubmit(event) {
-    event.preventDefault();
+const [
+  codeSent,
+  setCodeSent,
+] = useState(false);
 
-    setLoading(true);
-    setMessage("");
+const [
+  emailVerified,
+  setEmailVerified,
+] = useState(false);
 
-    try {
-      await api.post("/auth/signup", {
-        email: email.trim(),
-        password: password,
-        name: name.trim(),
-      });
+const [
+  sendingCode,
+  setSendingCode,
+] = useState(false);
 
-      window.alert(
-        "회원가입이 완료되었습니다. 로그인해 주세요."
+const [
+  verifyingCode,
+  setVerifyingCode,
+] = useState(false);
+
+const [
+  resendSeconds,
+  setResendSeconds,
+] = useState(0);
+
+const [
+  messageType,
+  setMessageType,
+] = useState("");
+async function sendVerificationCode() {
+  const normalizedEmail =
+    email.trim()
+      .toLowerCase();
+
+  if (!normalizedEmail) {
+    setMessage(
+      "이메일을 입력해 주세요."
+    );
+
+    setMessageType("error");
+    return;
+  }
+
+  const emailPattern =
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (
+    !emailPattern.test(
+      normalizedEmail
+    )
+  ) {
+    setMessage(
+      "올바른 이메일 주소를 입력해 주세요."
+    );
+
+    setMessageType("error");
+    return;
+  }
+
+  setSendingCode(true);
+  setMessage("");
+  setMessageType("");
+
+  try {
+    const response =
+      await api.post(
+        "/auth/email/send",
+        {
+          email:
+            normalizedEmail,
+        }
       );
 
-      navigate("/login", {
-        replace: true,
-      });
-    } catch (error) {
-      const errorMessage =
-        error.response?.data?.message ||
-        "회원가입에 실패했습니다.";
+    setCodeSent(true);
+    setEmailVerified(false);
+    setVerificationCode("");
+    setResendSeconds(60);
 
-      setMessage(errorMessage);
-    } finally {
-      setLoading(false);
-    }
+    setMessage(
+      response.data?.message ||
+        "인증번호를 전송했습니다."
+    );
+
+    setMessageType("success");
+  } catch (error) {
+    setMessage(
+      error.response?.data
+        ?.message ||
+        "인증번호를 전송하지 못했습니다."
+    );
+
+    setMessageType("error");
+  } finally {
+    setSendingCode(false);
   }
+}
+async function verifyEmailCode() {
+  const normalizedEmail =
+    email.trim()
+      .toLowerCase();
+
+  if (
+    !/^[0-9]{6}$/.test(
+      verificationCode
+    )
+  ) {
+    setMessage(
+      "인증번호 숫자 6자리를 입력해 주세요."
+    );
+
+    setMessageType("error");
+    return;
+  }
+
+  setVerifyingCode(true);
+  setMessage("");
+  setMessageType("");
+
+  try {
+    const response =
+      await api.post(
+        "/auth/email/verify",
+        {
+          email:
+            normalizedEmail,
+
+          code:
+            verificationCode,
+        }
+      );
+
+    setEmailVerified(true);
+    setResendSeconds(0);
+
+    setMessage(
+      response.data?.message ||
+        "이메일 인증이 완료되었습니다."
+    );
+
+    setMessageType("success");
+  } catch (error) {
+    setEmailVerified(false);
+
+    setMessage(
+      error.response?.data
+        ?.message ||
+        "인증번호가 올바르지 않습니다."
+    );
+
+    setMessageType("error");
+  } finally {
+    setVerifyingCode(false);
+  }
+}
+  async function handleSubmit(
+  event
+) {
+  event.preventDefault();
+
+  if (!emailVerified) {
+    setMessage(
+      "이메일 인증을 완료해 주세요."
+    );
+
+    setMessageType("error");
+    return;
+  }
+
+  if (!name.trim()) {
+    setMessage(
+      "이름을 입력해 주세요."
+    );
+
+    setMessageType("error");
+    return;
+  }
+
+  if (password.length < 8) {
+    setMessage(
+      "비밀번호는 8자 이상 입력해 주세요."
+    );
+
+    setMessageType("error");
+    return;
+  }
+
+  setLoading(true);
+  setMessage("");
+  setMessageType("");
+
+  try {
+    await api.post(
+      "/auth/signup",
+      {
+        email:
+          email.trim()
+            .toLowerCase(),
+
+        password,
+
+        name:
+          name.trim(),
+      }
+    );
+
+    window.alert(
+      "회원가입이 완료되었습니다. 로그인해 주세요."
+    );
+
+    navigate("/login", {
+      replace: true,
+    });
+  } catch (error) {
+    setMessage(
+      error.response?.data
+        ?.message ||
+        "회원가입에 실패했습니다."
+    );
+
+    setMessageType("error");
+  } finally {
+    setLoading(false);
+  }
+}
+  useEffect(() => {
+  if (resendSeconds <= 0) {
+    return undefined;
+  }
+
+  const timerId =
+    window.setInterval(() => {
+      setResendSeconds(
+        (current) => {
+          if (current <= 1) {
+            window.clearInterval(
+              timerId
+            );
+
+            return 0;
+          }
+
+          return current - 1;
+        }
+      );
+    }, 1000);
+
+  return () => {
+    window.clearInterval(
+      timerId
+    );
+  };
+}, [resendSeconds]);
+function handleEmailChange(
+  event
+) {
+  setEmail(
+    event.target.value
+  );
+
+  setCodeSent(false);
+  setEmailVerified(false);
+  setVerificationCode("");
+  setResendSeconds(0);
+  setMessage("");
+  setMessageType("");
+}
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
@@ -230,35 +475,159 @@ function SignupPage() {
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="email"
-                    className="mb-2 block text-sm font-semibold text-slate-300"
-                  >
-                    이메일
-                  </label>
+  <label
+    htmlFor="email"
+    className="mb-2 block text-sm font-semibold text-slate-300"
+  >
+    이메일
+  </label>
 
-                  <div className="relative">
-                    <Mail
-                      size={19}
-                      className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
-                    />
+  <div className="flex flex-col gap-2 sm:flex-row">
+    <div className="relative min-w-0 flex-1">
+      <Mail
+        size={19}
+        className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
+      />
 
-                    <input
-                      id="email"
-                      type="email"
-                      value={email}
-                      placeholder="example@email.com"
-                      autoComplete="email"
-                      onChange={(event) => {
-                        setEmail(
-                          event.target.value
-                        );
-                      }}
-                      required
-                      className="w-full rounded-xl border border-slate-700 bg-slate-950 py-3.5 pl-12 pr-4 text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
-                    />
-                  </div>
-                </div>
+      <input
+        id="email"
+        type="email"
+        value={email}
+        placeholder="example@email.com"
+        autoComplete="email"
+        disabled={
+          emailVerified
+        }
+        onChange={
+          handleEmailChange
+        }
+        required
+        className={
+          "w-full rounded-xl border bg-slate-950 py-3.5 pl-12 pr-4 text-white outline-none transition placeholder:text-slate-600 focus:ring-2 disabled:cursor-not-allowed disabled:opacity-70 " +
+          (emailVerified
+            ? "border-green-500/40 focus:border-green-500 focus:ring-green-500/20"
+            : "border-slate-700 focus:border-cyan-500 focus:ring-cyan-500/20")
+        }
+      />
+
+      {emailVerified && (
+        <CheckCircle2
+          size={19}
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-green-400"
+        />
+      )}
+    </div>
+
+    <button
+      type="button"
+      onClick={
+        sendVerificationCode
+      }
+      disabled={
+        sendingCode ||
+        emailVerified ||
+        resendSeconds > 0
+      }
+      className="flex shrink-0 items-center justify-center gap-2 rounded-xl bg-cyan-500 px-4 py-3.5 font-bold text-slate-950 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      {resendSeconds > 0 ? (
+        <>
+          <Clock3 size={17} />
+          {resendSeconds}초
+        </>
+      ) : sendingCode ? (
+        "전송 중..."
+      ) : codeSent ? (
+        "인증번호 재전송"
+      ) : (
+        "인증번호 전송"
+      )}
+    </button>
+  </div>
+
+  {emailVerified && (
+    <div className="mt-3 flex items-center gap-2 rounded-xl border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm font-bold text-green-300">
+      <ShieldCheck
+        size={18}
+      />
+
+      이메일 인증이 완료되었습니다.
+    </div>
+  )}
+</div>
+
+{codeSent &&
+  !emailVerified && (
+    <div>
+      <label
+        htmlFor="verificationCode"
+        className="mb-2 block text-sm font-semibold text-slate-300"
+      >
+        이메일 인증번호
+      </label>
+
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <div className="relative min-w-0 flex-1">
+          <ShieldCheck
+            size={19}
+            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
+          />
+
+          <input
+            id="verificationCode"
+            type="text"
+            value={
+              verificationCode
+            }
+            onChange={(event) => {
+              setVerificationCode(
+                event.target.value
+                  .replace(
+                    /[^0-9]/g,
+                    ""
+                  )
+                  .slice(0, 6)
+              );
+
+              setMessage("");
+              setMessageType("");
+            }}
+            placeholder="인증번호 숫자 6자리"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            maxLength={6}
+            className="w-full rounded-xl border border-slate-700 bg-slate-950 py-3.5 pl-12 pr-4 tracking-[0.3em] text-white outline-none transition placeholder:tracking-normal placeholder:text-slate-600 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
+          />
+        </div>
+
+        <button
+          type="button"
+          onClick={
+            verifyEmailCode
+          }
+          disabled={
+            verifyingCode ||
+            verificationCode
+              .length !== 6
+          }
+          className="flex shrink-0 items-center justify-center gap-2 rounded-xl border border-green-500/40 px-5 py-3.5 font-bold text-green-300 transition hover:bg-green-500/10 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <CheckCircle2
+            size={17}
+          />
+
+          {verifyingCode
+            ? "확인 중..."
+            : "인증 확인"}
+        </button>
+      </div>
+
+      <p className="mt-2 text-xs leading-5 text-slate-500">
+        이메일로 전송된 인증번호를
+        5분 이내에 입력해 주세요.
+      </p>
+    </div>
+  )}
 
                 <div>
                   <label
@@ -309,25 +678,36 @@ function SignupPage() {
                 </div>
 
                 {message && (
-                  <div
-                    role="alert"
-                    className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm leading-6 text-red-300"
-                  >
-                    {message}
-                  </div>
-                )}
+  <div
+    role="alert"
+    className={
+      "rounded-xl border px-4 py-3 text-sm leading-6 " +
+      (messageType ===
+      "success"
+        ? "border-green-500/30 bg-green-500/10 text-green-300"
+        : "border-red-500/30 bg-red-500/10 text-red-300")
+    }
+  >
+    {message}
+  </div>
+)}
 
                 <button
-                  type="submit"
-                  disabled={loading}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-500 py-3.5 font-black text-slate-950 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <UserPlus size={19} />
+  type="submit"
+  disabled={
+    loading ||
+    !emailVerified
+  }
+  className="flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-500 py-3.5 font-black text-slate-950 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-50"
+>
+  <UserPlus size={19} />
 
-                  {loading
-                    ? "가입 처리 중..."
-                    : "회원가입"}
-                </button>
+  {loading
+    ? "가입 처리 중..."
+    : emailVerified
+      ? "회원가입"
+      : "이메일 인증이 필요합니다"}
+</button>
               </form>
 
               <div className="my-7 flex items-center gap-4">

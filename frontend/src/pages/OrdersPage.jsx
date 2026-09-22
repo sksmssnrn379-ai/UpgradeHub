@@ -309,7 +309,7 @@ function OrdersPage() {
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <header className="border-b border-slate-800 bg-slate-900">
-        <div className="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-6 px-6 py-3">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           <Link
             to="/home"
             className="flex items-center gap-2 text-2xl font-bold text-cyan-400"

@@ -167,9 +167,8 @@ export default function MyPcPage() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           <Link
             to="/home"
-            className="flex items-center gap-2 text-2xl font-bold text-cyan-400"
+            className="text-2xl font-bold text-cyan-400"
           >
-            <Cpu size={27} />
             UpgradeHub
           </Link>
 
@@ -183,7 +182,7 @@ export default function MyPcPage() {
 
             <Link
               to="/mypc"
-              className="font-bold text-cyan-400"
+              className="transition hover:text-cyan-400"
             >
               MY PC
             </Link>

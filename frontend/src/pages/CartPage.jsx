@@ -110,64 +110,17 @@ export default function CartPage() {
   const totalCount = cart.items.reduce((total, item) => total + item.quantity, 0);
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-slate-950 text-white">
-      <Link
-            to="/home"
-            className="flex items-center gap-2 text-2xl font-bold text-cyan-400"
-          >
-            <Cpu size={27} />
+    <div className="min-h-screen bg-slate-950 text-white">
+      <header className="border-b border-slate-800 bg-slate-900">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+          <button onClick={() => navigate("/")} className="text-2xl font-bold text-cyan-400">
             UpgradeHub
-          </Link>
-
-          <nav className="flex flex-wrap items-center gap-5 text-sm">
-            <Link
-              to="/products"
-              className="transition hover:text-cyan-400"
-            >
-              PRODUCTS
-            </Link>
-
-            <Link
-              to="/mypc"
-              className="transition hover:text-cyan-400"
-            >
-              MY PC
-            </Link>
-
-            <Link
-              to="/orders"
-              className="transition hover:text-cyan-400"
-            >
-              ORDERS
-            </Link>
-
-            <Link
-              to="/advisor"
-              className="font-bold text-green-400"
-            >
-              AI ADVISOR
-            </Link>
-            <Link
-  to="/addresses"
-  className="transition hover:text-cyan-400"
->
-  ADDRESSES
-</Link>
-            <Link
-              to="/cart"
-              className="flex items-center gap-2 transition hover:text-cyan-400"
-            >
-              <ShoppingCart size={18} />
-              CART
-            </Link>
-
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="transition hover:text-red-400"
-            >
-              LOGOUT
-            </button>
+          </button>
+          <nav className="hidden md:flex gap-8 text-sm font-medium text-slate-300">
+            <button onClick={() => navigate("/products")} className="hover:text-cyan-400 transition">PRODUCTS</button>
+            <button onClick={() => navigate("/mypc")} className="hover:text-cyan-400 transition">MY PC</button>
+            <button onClick={() => navigate("/orders")} className="hover:text-cyan-400 transition">ORDERS</button>
+            <span className="text-cyan-400">CART</span>
           </nav>
         </div>
       </header>

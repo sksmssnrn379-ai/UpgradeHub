@@ -1,20 +1,20 @@
 import {
   ArrowLeft,
   CheckCircle2,
-  Cpu,
   Edit3,
   Home,
   MapPin,
   Plus,
   RefreshCw,
   Save,
+  ShoppingCart,
   Star,
   Trash2,
   X,
 } from "lucide-react";
 
 import {
-  useEffect,
+
   useState,
 } from "react";
 
@@ -37,7 +37,7 @@ const EMPTY_FORM = {
 
 function AddressPage() {
   const navigate = useNavigate();
-
+  
   const [addresses, setAddresses] =
     useState([]);
 
@@ -59,10 +59,9 @@ function AddressPage() {
   const [messageType, setMessageType] =
     useState("");
 
-  useEffect(() => {
-    loadAddresses();
-  }, []);
-
+  const isLoggedIn =
+  Boolean(localStorage.getItem("token"));
+  
   async function loadAddresses() {
     const token =
       localStorage.getItem("token");
@@ -427,16 +426,15 @@ function AddressPage() {
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <header className="border-b border-slate-800 bg-slate-900">
-        <div className="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-6 px-6 py-3">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           <Link
             to="/home"
-            className="flex items-center gap-2 text-2xl font-bold text-cyan-400"
+            className="text-2xl font-bold text-cyan-400"
           >
-            <Cpu size={27} />
             UpgradeHub
           </Link>
 
-          <nav className="flex flex-wrap items-center justify-end gap-5 text-sm">
+          <nav className="flex items-center gap-6 text-sm">
             <Link
               to="/products"
               className="transition hover:text-cyan-400"
@@ -459,19 +457,41 @@ function AddressPage() {
             </Link>
 
             <Link
-              to="/addresses"
-              className="font-bold text-cyan-400"
+              to="/advisor"
+              className="transition hover:text-cyan-400"
             >
-              ADDRESSES
+              AI ADVISOR
+            </Link>
+            <Link
+  to="/addresses"
+  className="transition hover:text-cyan-400"
+>
+  ADDRESSES
+</Link>
+            <Link
+              to="/cart"
+              className="flex items-center gap-2 transition hover:text-cyan-400"
+            >
+              <ShoppingCart size={18} />
+              CART
             </Link>
 
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="transition hover:text-red-400"
-            >
-              LOGOUT
-            </button>
+            {isLoggedIn ? (
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="transition hover:text-red-400"
+              >
+                LOGOUT
+              </button>
+            ) : (
+              <Link
+                to="/login"
+                className="transition hover:text-cyan-400"
+              >
+                LOGIN
+              </Link>
+            )}
           </nav>
         </div>
       </header>

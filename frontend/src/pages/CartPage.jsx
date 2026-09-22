@@ -116,7 +116,7 @@ export default function CartPage() {
           <button onClick={() => navigate("/")} className="text-2xl font-bold text-cyan-400">
             UpgradeHub
           </button>
-          <nav className="hidden md:flex gap-8 text-sm font-medium text-slate-300">
+          <nav className="flex gap-8 text-sm font-medium text-slate-300">
             <button onClick={() => navigate("/products")} className="hover:text-cyan-400 transition">PRODUCTS</button>
             <button onClick={() => navigate("/mypc")} className="hover:text-cyan-400 transition">MY PC</button>
             <button onClick={() => navigate("/orders")} className="hover:text-cyan-400 transition">ORDERS</button>

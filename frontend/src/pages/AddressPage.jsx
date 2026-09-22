@@ -464,6 +464,12 @@ function AddressPage() {
             >
               ADDRESSES
             </Link>
+            <Link
+              to="/cart"
+              className="flex items-center gap-2 transition hover:text-cyan-400"
+            >
+              CART
+            </Link>
 
             <button
               type="button"

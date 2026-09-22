@@ -120,7 +120,7 @@ export default function CartPage() {
             <button onClick={() => navigate("/products")} className="hover:text-cyan-400 transition">PRODUCTS</button>
             <button onClick={() => navigate("/mypc")} className="hover:text-cyan-400 transition">MY PC</button>
             <button onClick={() => navigate("/orders")} className="hover:text-cyan-400 transition">ORDERS</button>
-            <button onClick={() => navigate("/ADDRESSES")} className="hover:text-cyan-400 transition">ADDRESSES</button>
+            <button onClick={() => navigate("/addresses")} className="hover:text-cyan-400 transition">ADDRESSES</button>
             <span className="text-cyan-400">CART</span>
           </nav>
         </div>

@@ -457,7 +457,12 @@ function AddressPage() {
             >
               ORDERS
             </Link>
-
+            <Link
+              to="/advisor"
+              className="transition hover:text-cyan-400"
+            >
+              AI ADVISOR
+            </Link>
             <Link
               to="/addresses"
               className="font-bold text-cyan-400"

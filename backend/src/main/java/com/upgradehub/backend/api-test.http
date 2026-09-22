@@ -1,7 +1,6 @@
-POST https://emptyplace.duckdns.org/payments/prepare
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJza3Ntc3Nucm4zNzlAZ21haWwuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3ODk5ODgzODEsImV4cCI6MTc4OTk5MTk4MX0.wzv5EUABD9mqyK6w4ytud6cfJro4yfjSi9y5XMmeRcA
+POST https://emptyplace.duckdns.org/auth/email/send
 Content-Type: application/json
 
 {
-  "addressId": 1
+  "email": "sksmssnrn379@gmail.com"
 }

@@ -49,7 +49,19 @@ const [
 
   const [paying, setPaying] =
     useState(false);
+  async function preparePayment(addressId) {
+  const response =
+    await api.post(
+      "/payments/prepare",
+      {
+        addressId: Number(addressId),
+      }
+    );
 
+  setPaymentData(response.data);
+
+  return response.data;
+}
   useEffect(() => {
   let active = true;
 
@@ -98,25 +110,12 @@ console.log(
   addressId
 );
 
-const response =
-  await api.post(
-    "/payments/prepare",
-    {
-      addressId,
-    }
-  );
 
-      if (!active) {
-        return;
-      }
+const preparedPayment =
+  await preparePayment(addressId);
 
-      const preparedPayment =
-        response.data;
 
-      setPaymentData(
-        preparedPayment
-      );
-
+      
       const tossPayments =
         await loadTossPayments(
           import.meta.env
@@ -203,7 +202,7 @@ const response =
     active = false;
   };
 }, [navigate]);
-
+  
   async function requestPayment() {
   if (!selectedAddressId) {
     setMessage(
@@ -346,11 +345,17 @@ const response =
                   name="deliveryAddress"
                   value={address.id}
                   checked={selected}
-                  onChange={(event) => {
-                    setSelectedAddressId(
-                      event.target.value
-                    );
-                  }}
+                  onChange={async (event) => {
+  const addressId =
+    event.target.value;
+
+  setSelectedAddressId(
+    addressId
+  );
+
+  await preparePayment(addressId);
+}}
+
                   className="mt-1 h-4 w-4 accent-cyan-500"
                 />
 
